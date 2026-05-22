@@ -15,7 +15,7 @@ using ClosedXML.Excel;
 
 namespace AeroFuelHub.Web.Controllers;
 
-[Authorize(Roles = Roles.Admin + "," + Roles.FuelCoordinator)]
+[Authorize(Roles = Roles.Admin + "," + Roles.FuelCoordinator + "," + Roles.AirlineExecutive + "," + Roles.FuelSupplyExecutive)]
 public class FuelTransactionController : Controller
 {
     private readonly ApplicationDbContext _context;

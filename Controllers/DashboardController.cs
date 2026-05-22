@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using AeroFuelHub.Web.Data;
 using Microsoft.EntityFrameworkCore;
+using AeroFuelHub.Web.ViewModels.Dashboard;
 
 namespace AeroFuelHub.Web.Controllers;
 
@@ -19,19 +20,93 @@ public class DashboardController : Controller
     [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> Admin()
     {
-        ViewBag.TotalTransactions =
-            await _context.FuelTransactions.CountAsync();
+        var monthlyData =
+            await _context.FuelTransactions
+            .Where(x => !x.IsDeleted)
+            .GroupBy(x => new
+            {
+                x.TransactionDate.Year,
+                x.TransactionDate.Month
+            })
+            .Select(x => new
+            {
+                Month =
+                    x.Key.Month,
 
-        ViewBag.TotalAirlines =
-            await _context.Airlines.CountAsync();
+                Count =
+                    x.Count()
+            })
+            .OrderBy(x => x.Month)
+            .ToListAsync();
 
-        ViewBag.TotalFuelCompanies =
-            await _context.FuelCompanies.CountAsync();
+        var model =
+            new AdminDashboardViewModel
+            {
+                TotalTransactions =
+                    await _context.FuelTransactions
+                    .CountAsync(x => !x.IsDeleted),
 
-        ViewBag.TotalAirports =
-            await _context.Airports.CountAsync();
+                TotalAirlines =
+                    await _context.Airlines.CountAsync(),
 
-        return View();
+                TotalFuelCompanies =
+                    await _context.FuelCompanies.CountAsync(),
+
+                TotalAirports =
+                    await _context.Airports.CountAsync(),
+
+                TotalRevenue =
+                    await _context.FuelTransactions
+                    .Where(x => !x.IsDeleted)
+                    .SumAsync(x =>
+                        (decimal?)x.TotalAmount) ?? 0,
+
+                TotalFuelQuantity =
+                    await _context.FuelTransactions
+                    .Where(x => !x.IsDeleted)
+                    .SumAsync(x =>
+                        (decimal?)x.FuelQuantity) ?? 0,
+
+                ChartLabels =
+                    monthlyData
+                    .Select(x =>
+                        new DateTime(
+                            1,
+                            x.Month,
+                            1).ToString("MMM"))
+                    .ToList(),
+
+                ChartData =
+                    monthlyData
+                    .Select(x => x.Count)
+                    .ToList(),
+
+                RecentTransactions =
+                    await _context.FuelTransactions
+                    .Include(x => x.Airline)
+                    .Where(x => !x.IsDeleted)
+                    .OrderByDescending(x =>
+                        x.TransactionDate)
+                    .Take(5)
+                    .Select(x =>
+                        new RecentTransactionViewModel
+                        {
+                            TransactionNumber =
+                                x.TransactionNumber,
+
+                            Airline =
+                                x.Airline!.Name,
+
+                            TotalAmount =
+                                x.TotalAmount,
+
+                            TransactionDate =
+                                x.TransactionDate
+                        })
+                    .ToListAsync()
+            };
+
+        return View(model);
     }
 
     [Authorize(Roles = Roles.AirlineExecutive)]

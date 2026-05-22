@@ -1,0 +1,135 @@
+@model AeroFuelHub.Web.ViewModels.User.CreateUserViewModel
+
+@{
+    ViewData["Title"] = "Create User";
+}
+
+<div class="card">
+
+    <div class="card-header">
+
+        <h3 class="card-title">
+            Create User
+        </h3>
+
+    </div>
+
+    <form asp-action="Create" method="post">
+
+        <div class="card-body">
+
+            <div asp-validation-summary="All" class="text-danger mb-3">
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <label asp-for="FullName"></label>
+
+                    <input asp-for="FullName" class="form-control" />
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label asp-for="Email"></label>
+
+                    <input asp-for="Email" class="form-control" />
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label asp-for="Password"></label>
+
+                    <input asp-for="Password" class="form-control" />
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label>Role</label>
+
+                    <select asp-for="Role" asp-items="Model.Roles" id="roleSelect" class="form-select">
+
+                        <option value="">
+                            Select Role
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-6 mb-3" id="airlineSection" style="display:none;">
+
+                    <label>Airline</label>
+
+                    <select asp-for="AirlineId" asp-items="Model.Airlines" class="form-select">
+
+                        <option value="">
+                            Select Airline
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-6 mb-3" id="fuelCompanySection" style="display:none;">
+
+                    <label>Fuel Company</label>
+
+                    <select asp-for="FuelCompanyId" asp-items="Model.FuelCompanies" class="form-select">
+
+                        <option value="">
+                            Select Fuel Company
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="card-footer">
+
+            <button type="submit" class="btn btn-primary">
+
+                Save User
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+@section Scripts {
+
+    <script>
+
+        $('#roleSelect').change(function () {
+
+            let role = $(this).val();
+
+            $('#airlineSection').hide();
+
+            $('#fuelCompanySection').hide();
+
+            if (role === 'AirlineExecutive') {
+
+                $('#airlineSection').show();
+            }
+
+            if (role === 'FuelSupplyExecutive') {
+
+                $('#fuelCompanySection').show();
+            }
+        });
+
+    </script>
+
+}
