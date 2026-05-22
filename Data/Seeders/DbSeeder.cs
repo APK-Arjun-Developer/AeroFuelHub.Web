@@ -52,62 +52,90 @@ public static class DbSeeder
     }
 
     public static async Task SeedDemoUsersAsync(
-    UserManager<ApplicationUser> userManager)
-{
-    var demoUsers = new List<(string FullName,
-                               string Email,
-                               string Role)>
+    UserManager<ApplicationUser> userManager,
+    ApplicationDbContext context)
     {
-        (
-            "Airline Executive",
-            "airline@aerofuelhub.com",
-            Roles.AirlineExecutive
-        ),
+        var emirates =
+            context.Airlines.FirstOrDefault(x =>
+                x.Name == "Emirates");
 
-        (
-            "Fuel Supply Executive",
-            "fuel@aerofuelhub.com",
-            Roles.FuelSupplyExecutive
-        ),
+        var shell =
+            context.FuelCompanies.FirstOrDefault(x =>
+                x.Name == "Shell Aviation");
 
-        (
-            "Fuel Coordinator",
-            "coordinator@aerofuelhub.com",
-            Roles.FuelCoordinator
-        )
-    };
-
-    foreach (var demo in demoUsers)
+        var demoUsers = new List<ApplicationUser>
     {
-        var existingUser =
-            await userManager.FindByEmailAsync(demo.Email);
-
-        if (existingUser != null)
-            continue;
-
-        var user = new ApplicationUser
+        new()
         {
-            FullName = demo.FullName,
+            FullName = "Airline Executive",
 
-            UserName = demo.Email,
+            UserName = "airline@aerofuelhub.com",
 
-            Email = demo.Email,
+            Email = "airline@aerofuelhub.com",
+
+            EmailConfirmed = true,
+
+            AirlineId = emirates?.Id,
+
+            CreatedAt = DateTime.UtcNow
+        },
+
+        new()
+        {
+            FullName = "Fuel Supply Executive",
+
+            UserName = "fuel@aerofuelhub.com",
+
+            Email = "fuel@aerofuelhub.com",
+
+            EmailConfirmed = true,
+
+            FuelCompanyId = shell?.Id,
+
+            CreatedAt = DateTime.UtcNow
+        },
+
+        new()
+        {
+            FullName = "Fuel Coordinator",
+
+            UserName = "coordinator@aerofuelhub.com",
+
+            Email = "coordinator@aerofuelhub.com",
 
             EmailConfirmed = true,
 
             CreatedAt = DateTime.UtcNow
-        };
+        }
+    };
 
-        var result = await userManager.CreateAsync(
-            user,
-            "Password@123");
-
-        if (result.Succeeded)
+        var roles = new[]
         {
-            await userManager.AddToRoleAsync(
-                user,
-                demo.Role);
+        Roles.AirlineExecutive,
+        Roles.FuelSupplyExecutive,
+        Roles.FuelCoordinator
+    };
+
+        for (int i = 0; i < demoUsers.Count; i++)
+        {
+            var existing =
+                await userManager.FindByEmailAsync(
+                    demoUsers[i].Email!);
+
+            if (existing != null)
+                continue;
+
+            var result =
+                await userManager.CreateAsync(
+                    demoUsers[i],
+                    "Password@123");
+
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(
+                    demoUsers[i],
+                    roles[i]);
+            }
         }
     }
-}
 }

@@ -75,8 +75,8 @@ using (var scope = app.Services.CreateScope())
     await DbSeeder.SeedRolesAsync(roleManager);
 
     await DbSeeder.SeedAdminUserAsync(userManager);
-
-    await DbSeeder.SeedDemoUsersAsync(userManager);
+        
+    await DbSeeder.SeedDemoUsersAsync(userManager, context);
 
     await MasterDataSeeder.SeedAsync(context);
 }

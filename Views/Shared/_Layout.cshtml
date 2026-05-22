@@ -160,6 +160,82 @@
                                     <p>Transaction History</p>
                                 </a>
                             </li>
+
+                            <li class="nav-item">
+                                <a asp-controller="FuelTransaction" asp-action="Reports"
+                                    class="nav-link @(currentAction == "Reports" ? "active" : "")">
+
+                                    <i class="nav-icon fas fa-chart-bar"></i>
+
+                                    <p>Reports</p>
+                                </a>
+                            </li>
+                        }
+
+                        @if (User.IsInRole("AirlineExecutive"))
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="Dashboard" asp-action="Airline"
+                                    class="nav-link @(currentAction == "Airline" ? "active" : "")">
+
+                                    <i class="nav-icon fas fa-chart-line"></i>
+
+                                    <p>Dashboard</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a asp-controller="FuelTransaction" asp-action="History"
+                                    class="nav-link @(currentAction == "History" ? "active" : "")">
+
+                                    <i class="nav-icon fas fa-gas-pump"></i>
+
+                                    <p>Fuel Transactions</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a asp-controller="FuelTransaction" asp-action="Reports"
+                                    class="nav-link @(currentAction == "Reports" ? "active" : "")">
+
+                                    <i class="nav-icon fas fa-chart-bar"></i>
+
+                                    <p>Reports</p>
+                                </a>
+                            </li>
+                        }
+
+                        @if (User.IsInRole("FuelSupplyExecutive"))
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="Dashboard" asp-action="FuelSupply"
+                                    class="nav-link @(currentAction == "FuelSupply" ? "active" : "")">
+
+                                    <i class="nav-icon fas fa-chart-pie"></i>
+
+                                    <p>Dashboard</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a asp-controller="FuelTransaction" asp-action="History"
+                                    class="nav-link @(currentAction == "History" ? "active" : "")">
+
+                                    <i class="nav-icon fas fa-gas-pump"></i>
+
+                                    <p>Fuel Transactions</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a asp-controller="FuelTransaction" asp-action="Reports"
+                                    class="nav-link @(currentAction == "Reports" ? "active" : "")">
+
+                                    <i class="nav-icon fas fa-chart-bar"></i>
+
+                                    <p>Reports</p>
+                                </a>
+                            </li>
                         }
 
                     </ul>
