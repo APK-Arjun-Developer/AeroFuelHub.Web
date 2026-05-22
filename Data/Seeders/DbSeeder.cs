@@ -50,4 +50,64 @@ public static class DbSeeder
             await userManager.AddToRoleAsync(user, Roles.Admin);
         }
     }
+
+    public static async Task SeedDemoUsersAsync(
+    UserManager<ApplicationUser> userManager)
+{
+    var demoUsers = new List<(string FullName,
+                               string Email,
+                               string Role)>
+    {
+        (
+            "Airline Executive",
+            "airline@aerofuelhub.com",
+            Roles.AirlineExecutive
+        ),
+
+        (
+            "Fuel Supply Executive",
+            "fuel@aerofuelhub.com",
+            Roles.FuelSupplyExecutive
+        ),
+
+        (
+            "Fuel Coordinator",
+            "coordinator@aerofuelhub.com",
+            Roles.FuelCoordinator
+        )
+    };
+
+    foreach (var demo in demoUsers)
+    {
+        var existingUser =
+            await userManager.FindByEmailAsync(demo.Email);
+
+        if (existingUser != null)
+            continue;
+
+        var user = new ApplicationUser
+        {
+            FullName = demo.FullName,
+
+            UserName = demo.Email,
+
+            Email = demo.Email,
+
+            EmailConfirmed = true,
+
+            CreatedAt = DateTime.UtcNow
+        };
+
+        var result = await userManager.CreateAsync(
+            user,
+            "Password@123");
+
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(
+                user,
+                demo.Role);
+        }
+    }
+}
 }

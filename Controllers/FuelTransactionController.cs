@@ -10,6 +10,8 @@ using Microsoft.EntityFrameworkCore;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using AspNetCoreHero.ToastNotification.Abstractions;
+using ClosedXML.Excel;
 
 namespace AeroFuelHub.Web.Controllers;
 
@@ -17,10 +19,13 @@ namespace AeroFuelHub.Web.Controllers;
 public class FuelTransactionController : Controller
 {
     private readonly ApplicationDbContext _context;
+    private readonly INotyfService _notyf;
 
-    public FuelTransactionController(ApplicationDbContext context)
+    public FuelTransactionController(ApplicationDbContext context, INotyfService notyf)
     {
         _context = context;
+
+        _notyf = notyf;
     }
 
     [HttpGet]
@@ -81,8 +86,7 @@ public class FuelTransactionController : Controller
 
         await _context.SaveChangesAsync();
 
-        TempData["Success"] =
-            "Fuel transaction created successfully";
+        _notyf.Success("Fuel transaction created successfully");
 
         return RedirectToAction(nameof(History));
     }
@@ -229,6 +233,57 @@ public class FuelTransactionController : Controller
         return View(data);
     }
 
+    public async Task<IActionResult> ExportExcel()
+    {
+        var transactions = await _context.FuelTransactions
+            .Include(x => x.Airline)
+            .Include(x => x.Airport)
+            .Include(x => x.FuelCompany)
+            .ToListAsync();
+
+        using var workbook = new XLWorkbook();
+
+        var worksheet =
+            workbook.Worksheets.Add("Transactions");
+
+        worksheet.Cell(1, 1).Value = "Transaction Number";
+        worksheet.Cell(1, 2).Value = "Airline";
+        worksheet.Cell(1, 3).Value = "Airport";
+        worksheet.Cell(1, 4).Value = "Fuel Company";
+        worksheet.Cell(1, 5).Value = "Total Amount";
+
+        int row = 2;
+
+        foreach (var item in transactions)
+        {
+            worksheet.Cell(row, 1).Value =
+                item.TransactionNumber;
+
+            worksheet.Cell(row, 2).Value =
+                item.Airline?.Name;
+
+            worksheet.Cell(row, 3).Value =
+                item.Airport?.Name;
+
+            worksheet.Cell(row, 4).Value =
+                item.FuelCompany?.Name;
+
+            worksheet.Cell(row, 5).Value =
+                item.TotalAmount;
+
+            row++;
+        }
+
+        using var stream = new MemoryStream();
+
+        workbook.SaveAs(stream);
+
+        return File(
+            stream.ToArray(),
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "FuelTransactions.xlsx");
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
@@ -247,8 +302,7 @@ public class FuelTransactionController : Controller
 
         await _context.SaveChangesAsync();
 
-        TempData["Success"] =
-            "Transaction deleted successfully";
+        _notyf.Success("Transaction deleted successfully");
 
         return RedirectToAction(nameof(History));
     }
@@ -292,6 +346,8 @@ public class FuelTransactionController : Controller
 
     private string GenerateTransactionNumber()
     {
-        return $"FT-{DateTime.Now:yyyyMMddHHmmss}";
+        var random = new Random();
+
+        return $"FT-{DateTime.Now:yyyyMMdd}-{random.Next(1000, 9999)}";
     }
 }

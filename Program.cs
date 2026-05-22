@@ -3,11 +3,22 @@ using AeroFuelHub.Web.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using AeroFuelHub.Web.Data.Seeders;
-using Microsoft.AspNetCore.Identity;
+using AspNetCoreHero.ToastNotification;
+using AspNetCoreHero.ToastNotification.Extensions;
+using AspNetCoreHero.ToastNotification.Notyf;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddNotyf(config =>
+{
+    config.DurationInSeconds = 3;
+
+    config.IsDismissable = true;
+
+    config.Position = NotyfPosition.TopRight;
+});
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
@@ -42,6 +53,8 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
+app.UseNotyf();
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
@@ -62,6 +75,8 @@ using (var scope = app.Services.CreateScope())
     await DbSeeder.SeedRolesAsync(roleManager);
 
     await DbSeeder.SeedAdminUserAsync(userManager);
+
+    await DbSeeder.SeedDemoUsersAsync(userManager);
 
     await MasterDataSeeder.SeedAsync(context);
 }

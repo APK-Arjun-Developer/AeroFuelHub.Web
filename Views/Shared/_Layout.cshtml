@@ -1,4 +1,11 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var currentController =
+    ViewContext.RouteData.Values["controller"]?.ToString();
+
+    var currentAction =
+    ViewContext.RouteData.Values["action"]?.ToString();
+}
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -73,11 +80,22 @@
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
-                                <a asp-controller="Dashboard" asp-action="Admin" class="nav-link">
+                                <a asp-controller="Dashboard" asp-action="Admin"
+                                    class="nav-link @(currentAction == "Admin" ? "active" : "")">
 
                                     <i class="nav-icon fas fa-chart-line"></i>
 
                                     <p>Dashboard</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a asp-controller="FuelTransaction" asp-action="Create"
+                                    class="nav-link @(currentAction == "Create" ? "active" : "")">
+
+                                    <i class="nav-icon fas fa-plus-circle"></i>
+
+                                    <p>Create Fuel Entry</p>
                                 </a>
                             </li>
 
@@ -91,7 +109,8 @@
                             </li>
 
                             <li class="nav-item">
-                                <a asp-controller="FuelTransaction" asp-action="History" class="nav-link">
+                                <a asp-controller="FuelTransaction" asp-action="History"
+                                    class="nav-link @(currentAction == "History" ? "active" : "")">
 
                                     <i class="nav-icon fas fa-gas-pump"></i>
 
@@ -100,7 +119,8 @@
                             </li>
 
                             <li class="nav-item">
-                                <a asp-controller="FuelTransaction" asp-action="Reports" class="nav-link">
+                                <a asp-controller="FuelTransaction" asp-action="Reports"
+                                    class="nav-link @(currentAction == "Reports" ? "active" : "")">
 
                                     <i class="nav-icon fas fa-chart-bar"></i>
 
@@ -112,7 +132,8 @@
                         @if (User.IsInRole("FuelCoordinator"))
                         {
                             <li class="nav-item">
-                                <a asp-controller="Dashboard" asp-action="Coordinator" class="nav-link">
+                                <a asp-controller="Dashboard" asp-action="Coordinator"
+                                    class="nav-link @(currentAction == "Coordinator" ? "active" : "")">
 
                                     <i class="nav-icon fas fa-chart-pie"></i>
 
@@ -121,7 +142,8 @@
                             </li>
 
                             <li class="nav-item">
-                                <a asp-controller="FuelTransaction" asp-action="Create" class="nav-link">
+                                <a asp-controller="FuelTransaction" asp-action="Create"
+                                    class="nav-link @(currentAction == "Create" ? "active" : "")">
 
                                     <i class="nav-icon fas fa-plus-circle"></i>
 
@@ -130,7 +152,8 @@
                             </li>
 
                             <li class="nav-item">
-                                <a asp-controller="FuelTransaction" asp-action="History" class="nav-link">
+                                <a asp-controller="FuelTransaction" asp-action="History"
+                                    class="nav-link @(currentAction == "History" ? "active" : "")">
 
                                     <i class="nav-icon fas fa-history"></i>
 

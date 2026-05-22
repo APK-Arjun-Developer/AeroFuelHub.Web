@@ -12,13 +12,11 @@
         </h3>
     </div>
 
-    <form asp-action="Create"
-          method="post">
+    <form asp-action="Create" method="post">
 
         <div class="card-body">
 
-            <div asp-validation-summary="All"
-                 class="text-danger mb-3">
+            <div asp-validation-summary="All" class="text-danger mb-3">
             </div>
 
             <div class="row">
@@ -29,9 +27,7 @@
                         Airline
                     </label>
 
-                    <select asp-for="AirlineId"
-                            asp-items="Model.Airlines"
-                            class="form-select">
+                    <select asp-for="AirlineId" asp-items="Model.Airlines" class="form-select">
 
                         <option value="">
                             Select Airline
@@ -47,9 +43,7 @@
                         Aircraft
                     </label>
 
-                    <select asp-for="AircraftId"
-                            asp-items="Model.Aircrafts"
-                            class="form-select">
+                    <select asp-for="AircraftId" asp-items="Model.Aircrafts" class="form-select">
 
                         <option value="">
                             Select Aircraft
@@ -65,9 +59,7 @@
                         Airport
                     </label>
 
-                    <select asp-for="AirportId"
-                            asp-items="Model.Airports"
-                            class="form-select">
+                    <select asp-for="AirportId" asp-items="Model.Airports" class="form-select">
 
                         <option value="">
                             Select Airport
@@ -83,9 +75,7 @@
                         Fuel Company
                     </label>
 
-                    <select asp-for="FuelCompanyId"
-                            asp-items="Model.FuelCompanies"
-                            class="form-select">
+                    <select asp-for="FuelCompanyId" asp-items="Model.FuelCompanies" class="form-select">
 
                         <option value="">
                             Select Fuel Company
@@ -99,8 +89,7 @@
 
                     <label asp-for="FlightNumber"></label>
 
-                    <input asp-for="FlightNumber"
-                           class="form-control" />
+                    <input asp-for="FlightNumber" class="form-control" />
 
                 </div>
 
@@ -108,9 +97,7 @@
 
                     <label asp-for="FuelQuantity"></label>
 
-                    <input asp-for="FuelQuantity"
-                           id="fuelQuantity"
-                           class="form-control" />
+                    <input asp-for="FuelQuantity" id="fuelQuantity" class="form-control" />
 
                 </div>
 
@@ -118,9 +105,7 @@
 
                     <label asp-for="PricePerLiter"></label>
 
-                    <input asp-for="PricePerLiter"
-                           id="pricePerLiter"
-                           class="form-control" />
+                    <input asp-for="PricePerLiter" id="pricePerLiter" class="form-control" />
 
                 </div>
 
@@ -128,10 +113,7 @@
 
                     <label asp-for="TotalAmount"></label>
 
-                    <input asp-for="TotalAmount"
-                           id="totalAmount"
-                           class="form-control"
-                           readonly />
+                    <input asp-for="TotalAmount" id="totalAmount" class="form-control" readonly />
 
                 </div>
 
@@ -139,8 +121,7 @@
 
                     <label asp-for="Remarks"></label>
 
-                    <textarea asp-for="Remarks"
-                              class="form-control">
+                    <textarea asp-for="Remarks" class="form-control">
                     </textarea>
 
                 </div>
@@ -151,8 +132,7 @@
 
         <div class="card-footer">
 
-            <button type="submit"
-                    class="btn btn-primary">
+            <button type="submit" id="submitBtn" class="btn btn-primary">
 
                 Save Transaction
 
@@ -166,30 +146,39 @@
 
 @section Scripts {
 
-<script>
+    <script>
 
-    function calculateTotal() {
+        function calculateTotal() {
 
-        let quantity =
-            parseFloat(
-                $('#fuelQuantity').val()) || 0;
+            let quantity =
+                parseFloat(
+                    $('#fuelQuantity').val()) || 0;
 
-        let price =
-            parseFloat(
-                $('#pricePerLiter').val()) || 0;
+            let price =
+                parseFloat(
+                    $('#pricePerLiter').val()) || 0;
 
-        let total = quantity * price;
+            let total = quantity * price;
 
-        $('#totalAmount')
-            .val(total.toFixed(2));
-    }
+            $('#totalAmount')
+                .val(total.toFixed(2));
+        }
 
-    $('#fuelQuantity')
-        .on('keyup change', calculateTotal);
+        $('#fuelQuantity')
+            .on('keyup change', calculateTotal);
 
-    $('#pricePerLiter')
-        .on('keyup change', calculateTotal);
+        $('#pricePerLiter')
+            .on('keyup change', calculateTotal);
 
-</script>
+        $('form').submit(function () {
+
+            $('#submitBtn')
+                .prop('disabled', true);
+
+            $('#submitBtn')
+                .text('Saving...');
+        });
+
+    </script>
 
 }
