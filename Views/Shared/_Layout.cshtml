@@ -23,9 +23,166 @@
 
     <!-- AdminLTE -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css" />
+
+    <style>
+        .dark-mode {
+            background-color: #343a40 !important;
+            color: #fff !important;
+        }
+
+        .dark-mode .main-header {
+            background-color: #343a40 !important;
+            border-bottom: 1px solid #454d55;
+        }
+
+        .dark-mode .main-header .nav-link {
+            color: #fff !important;
+        }
+
+        .dark-mode .navbar-nav .nav-link i {
+            color: #fff !important;
+        }
+
+        .dark-mode .main-sidebar {
+            background-color: #2b2f33 !important;
+        }
+
+        .dark-mode .nav-sidebar .nav-link {
+            color: #c2c7d0 !important;
+        }
+
+        .dark-mode .nav-sidebar .nav-link.active {
+            background-color: #007bff !important;
+            color: #fff !important;
+        }
+
+        .dark-mode .nav-sidebar .nav-icon {
+            color: #c2c7d0 !important;
+        }
+
+        .dark-mode .brand-link {
+            background-color: #2b2f33 !important;
+            color: #fff !important;
+        }
+
+        .dark-mode .card {
+            background-color: #343a40 !important;
+            color: #fff !important;
+            border: 1px solid #454d55;
+        }
+
+        .dark-mode .card-header {
+            background-color: #3f474e !important;
+            border-bottom: 1px solid #454d55;
+        }
+
+        .dark-mode table {
+            background-color: #343a40 !important;
+            color: #fff !important;
+        }
+
+        .dark-mode table thead {
+            background-color: #3f474e !important;
+            color: #fff !important;
+        }
+
+        .dark-mode table tbody tr {
+            background-color: #343a40 !important;
+            color: #fff !important;
+        }
+
+        .dark-mode table tbody tr:hover {
+            background-color: #454d55 !important;
+        }
+
+        .dark-mode .table-bordered td,
+        .dark-mode .table-bordered th {
+            border-color: #4b545c !important;
+        }
+
+        .dark-mode .dataTables_wrapper {
+            color: #fff !important;
+        }
+
+        .dark-mode .dataTables_wrapper .dataTables_length,
+        .dark-mode .dataTables_wrapper .dataTables_filter,
+        .dark-mode .dataTables_wrapper .dataTables_info,
+        .dark-mode .dataTables_wrapper .dataTables_paginate {
+            color: #fff !important;
+        }
+
+        .dark-mode .dataTables_wrapper input,
+        .dark-mode .dataTables_wrapper select {
+            background-color: #454d55 !important;
+            color: #fff !important;
+            border: 1px solid #6c757d !important;
+        }
+
+        .dark-mode .page-link {
+            background-color: #343a40 !important;
+            color: #fff !important;
+            border-color: #454d55 !important;
+        }
+
+        .dark-mode .page-item.active .page-link {
+            background-color: #007bff !important;
+            border-color: #007bff !important;
+        }
+
+        .dark-mode .form-control,
+        .dark-mode .form-select {
+            background-color: #454d55 !important;
+            color: #fff !important;
+            border-color: #6c757d !important;
+        }
+
+        .dark-mode .form-control:focus,
+        .dark-mode .form-select:focus {
+            background-color: #454d55 !important;
+            color: #fff !important;
+        }
+
+        .dark-mode .dropdown-menu {
+            background-color: #343a40 !important;
+            border: 1px solid #454d55;
+        }
+
+        .dark-mode .dropdown-item {
+            color: #fff !important;
+        }
+
+        .dark-mode .dropdown-item:hover {
+            background-color: #495057 !important;
+        }
+
+        .dark-mode table.dataTable tbody tr,
+        .dark-mode table.dataTable tbody td,
+        .dark-mode table.dataTable thead th {
+            background-color: #343a40 !important;
+            color: #fff !important;
+        }
+
+        .dark-mode table.dataTable.stripe tbody tr.odd,
+        .dark-mode table.dataTable.display tbody tr.odd {
+            background-color: #3b434a !important;
+        }
+
+        .dark-mode table.dataTable.hover tbody tr:hover,
+        .dark-mode table.dataTable.display tbody tr:hover {
+            background-color: #495057 !important;
+        }
+
+        .dark-mode table.dataTable thead th {
+            border-bottom: 1px solid #4b545c !important;
+        }
+
+        .dark-mode table.dataTable tbody td {
+            border-color: #4b545c !important;
+        }
+    </style>
 </head>
 
-<body class="hold-transition sidebar-mini">
+<body id="bodyElement" class="hold-transition sidebar-mini layout-fixed">
 
     <div class="wrapper">
 
@@ -45,14 +202,44 @@
                 @if (User.Identity!.IsAuthenticated)
                 {
                     <li class="nav-item">
-                        <span class="nav-link">
-                            @User.Identity.Name
-                        </span>
+                        <div class="dropdown">
+
+                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
+
+                                @User.Identity!.Name
+
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-end">
+
+                                <a class="dropdown-item" asp-controller="Profile" asp-action="Index">
+
+                                    My Profile
+
+                                </a>
+
+                                <a class="dropdown-item" asp-controller="Profile" asp-action="ChangePassword">
+
+                                    Change Password
+
+                                </a>
+
+                                <div class="dropdown-divider"></div>
+
+                                <a class="dropdown-item" asp-controller="Account" asp-action="Logout">
+
+                                    Logout
+
+                                </a>
+
+                            </div>
+
+                        </div>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Account" asp-action="Logout">
-                            Logout
+                        <a class="nav-link" href="#" id="darkModeToggle">
+                            <i class="fas fa-moon"></i>
                         </a>
                     </li>
                 }
@@ -62,13 +249,20 @@
         </nav>
 
         <!-- Sidebar -->
-        <aside class="main-sidebar sidebar-dark-primary elevation-4">
+        <aside class="main-sidebar sidebar-light-primary elevation-4">
 
-            <a href="#" class="brand-link text-center">
+            <a asp-controller="Dashboard" asp-action="Index" class="brand-link d-flex align-items-center">
 
-                <span class="brand-text font-weight-light">
+                <img src="~/images/logo.png" alt="AeroFuel Hub Logo" class="brand-image img-circle elevation-2" style="opacity: .9;
+                width: 34px;
+                height: 34px;
+                object-fit: contain;
+                background: transparent;" />
+
+                <span class="brand-text fw-light ms-2">
                     AeroFuel Hub
                 </span>
+
             </a>
 
             <div class="sidebar">
@@ -296,6 +490,39 @@
     <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+
+        const body =
+            document.getElementById('bodyElement');
+
+        const darkModeToggle =
+            document.getElementById('darkModeToggle');
+
+        if (localStorage.getItem('dark-mode') === 'enabled') {
+
+            body.classList.add('dark-mode');
+        }
+
+        darkModeToggle.addEventListener('click', function () {
+
+            body.classList.toggle('dark-mode');
+
+            if (body.classList.contains('dark-mode')) {
+
+                localStorage.setItem(
+                    'dark-mode',
+                    'enabled');
+            }
+            else {
+
+                localStorage.setItem(
+                    'dark-mode',
+                    'disabled');
+            }
+        });
+
+    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 

@@ -1,0 +1,51 @@
+@model AeroFuelHub.Web.ViewModels.Profile.ProfileViewModel
+
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="card">
+
+    <div class="card-header">
+
+        <h3 class="card-title">
+            Profile
+        </h3>
+
+    </div>
+
+    <form method="post">
+
+        <div class="card-body">
+
+            <div class="mb-3">
+
+                <label asp-for="FullName"></label>
+
+                <input asp-for="FullName" class="form-control" />
+
+            </div>
+
+            <div class="mb-3">
+
+                <label asp-for="Email"></label>
+
+                <input asp-for="Email" class="form-control" />
+
+            </div>
+
+        </div>
+
+        <div class="card-footer">
+
+            <button class="btn btn-primary">
+
+                Update Profile
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>

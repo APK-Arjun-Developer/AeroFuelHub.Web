@@ -65,7 +65,7 @@ public class AccountController : Controller
 
         if (roles.Contains(Roles.AirlineExecutive))
             return RedirectToAction("Airline", "Dashboard");
-    
+
         if (roles.Contains(Roles.FuelSupplyExecutive))
             return RedirectToAction("FuelSupply", "Dashboard");
 

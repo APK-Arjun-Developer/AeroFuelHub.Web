@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using AeroFuelHub.Web.Data.Seeders;
 using AspNetCoreHero.ToastNotification;
 using AspNetCoreHero.ToastNotification.Extensions;
-using AspNetCoreHero.ToastNotification.Notyf;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -75,7 +74,7 @@ using (var scope = app.Services.CreateScope())
     await DbSeeder.SeedRolesAsync(roleManager);
 
     await DbSeeder.SeedAdminUserAsync(userManager);
-        
+
     await DbSeeder.SeedDemoUsersAsync(userManager, context);
 
     await MasterDataSeeder.SeedAsync(context);
