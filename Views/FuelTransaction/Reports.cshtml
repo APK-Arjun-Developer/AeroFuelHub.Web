@@ -1,0 +1,93 @@
+@model IEnumerable<AeroFuelHub.Web.Models.Entities.FuelTransaction>
+
+@{
+    ViewData["Title"] = "Reports";
+}
+
+<div class="card">
+
+    <div class="card-header">
+
+        <form method="get">
+
+            <div class="row">
+
+                <div class="col-md-3">
+
+                    <input type="date"
+                           name="startDate"
+                           class="form-control" />
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <input type="date"
+                           name="endDate"
+                           class="form-control" />
+
+                </div>
+
+                <div class="col-md-2">
+
+                    <button class="btn btn-primary">
+
+                        Filter
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+    <div class="card-body">
+
+        <table class="table table-bordered">
+
+            <thead>
+
+                <tr>
+
+                    <th>Transaction</th>
+                    <th>Airline</th>
+                    <th>Airport</th>
+                    <th>Fuel Company</th>
+                    <th>Total Amount</th>
+                    <th>Date</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+
+                        <td>@item.TransactionNumber</td>
+
+                        <td>@item.Airline?.Name</td>
+
+                        <td>@item.Airport?.Name</td>
+
+                        <td>@item.FuelCompany?.Name</td>
+
+                        <td>@item.TotalAmount</td>
+
+                        <td>@item.TransactionDate</td>
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>

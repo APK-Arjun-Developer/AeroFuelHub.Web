@@ -1,0 +1,195 @@
+@model AeroFuelHub.Web.ViewModels.FuelTransaction.CreateFuelTransactionViewModel
+
+@{
+    ViewData["Title"] = "Create Fuel Entry";
+}
+
+<div class="card">
+
+    <div class="card-header">
+        <h3 class="card-title">
+            Create Fuel Transaction
+        </h3>
+    </div>
+
+    <form asp-action="Create"
+          method="post">
+
+        <div class="card-body">
+
+            <div asp-validation-summary="All"
+                 class="text-danger mb-3">
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Airline
+                    </label>
+
+                    <select asp-for="AirlineId"
+                            asp-items="Model.Airlines"
+                            class="form-select">
+
+                        <option value="">
+                            Select Airline
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Aircraft
+                    </label>
+
+                    <select asp-for="AircraftId"
+                            asp-items="Model.Aircrafts"
+                            class="form-select">
+
+                        <option value="">
+                            Select Aircraft
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Airport
+                    </label>
+
+                    <select asp-for="AirportId"
+                            asp-items="Model.Airports"
+                            class="form-select">
+
+                        <option value="">
+                            Select Airport
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Fuel Company
+                    </label>
+
+                    <select asp-for="FuelCompanyId"
+                            asp-items="Model.FuelCompanies"
+                            class="form-select">
+
+                        <option value="">
+                            Select Fuel Company
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label asp-for="FlightNumber"></label>
+
+                    <input asp-for="FlightNumber"
+                           class="form-control" />
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label asp-for="FuelQuantity"></label>
+
+                    <input asp-for="FuelQuantity"
+                           id="fuelQuantity"
+                           class="form-control" />
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label asp-for="PricePerLiter"></label>
+
+                    <input asp-for="PricePerLiter"
+                           id="pricePerLiter"
+                           class="form-control" />
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label asp-for="TotalAmount"></label>
+
+                    <input asp-for="TotalAmount"
+                           id="totalAmount"
+                           class="form-control"
+                           readonly />
+
+                </div>
+
+                <div class="col-md-12 mb-3">
+
+                    <label asp-for="Remarks"></label>
+
+                    <textarea asp-for="Remarks"
+                              class="form-control">
+                    </textarea>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="card-footer">
+
+            <button type="submit"
+                    class="btn btn-primary">
+
+                Save Transaction
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+@section Scripts {
+
+<script>
+
+    function calculateTotal() {
+
+        let quantity =
+            parseFloat(
+                $('#fuelQuantity').val()) || 0;
+
+        let price =
+            parseFloat(
+                $('#pricePerLiter').val()) || 0;
+
+        let total = quantity * price;
+
+        $('#totalAmount')
+            .val(total.toFixed(2));
+    }
+
+    $('#fuelQuantity')
+        .on('keyup change', calculateTotal);
+
+    $('#pricePerLiter')
+        .on('keyup change', calculateTotal);
+
+</script>
+
+}

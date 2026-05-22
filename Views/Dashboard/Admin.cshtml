@@ -1,0 +1,126 @@
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="row">
+
+    <div class="col-lg-3 col-6">
+
+        <div class="small-box bg-info">
+
+            <div class="inner">
+                <h3>150</h3>
+
+                <p>Total Transactions</p>
+            </div>
+
+            <div class="icon">
+                <i class="fas fa-gas-pump"></i>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-3 col-6">
+
+        <div class="small-box bg-success">
+
+            <div class="inner">
+                <h3>12</h3>
+
+                <p>Airlines</p>
+            </div>
+
+            <div class="icon">
+                <i class="fas fa-plane"></i>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-3 col-6">
+
+        <div class="small-box bg-warning">
+
+            <div class="inner">
+                <h3>5</h3>
+
+                <p>Fuel Companies</p>
+            </div>
+
+            <div class="icon">
+                <i class="fas fa-oil-can"></i>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-3 col-6">
+
+        <div class="small-box bg-danger">
+
+            <div class="inner">
+                <h3>25</h3>
+
+                <p>Airports</p>
+            </div>
+
+            <div class="icon">
+                <i class="fas fa-map-marker-alt"></i>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="card">
+
+    <div class="card-header">
+        <h3 class="card-title">
+            Monthly Fuel Transactions
+        </h3>
+    </div>
+
+    <div class="card-body">
+
+        <canvas id="fuelChart"
+                height="100">
+        </canvas>
+
+    </div>
+
+</div>
+
+@section Scripts {
+
+<script>
+
+    const ctx =
+        document.getElementById('fuelChart');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: [
+                'Jan',
+                'Feb',
+                'Mar',
+                'Apr',
+                'May',
+                'Jun'
+            ],
+            datasets: [{
+                label: 'Transactions',
+                data: [12, 19, 8, 15, 22, 17]
+            }]
+        }
+    });
+
+</script>
+
+}
