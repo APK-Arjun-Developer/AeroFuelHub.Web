@@ -43,7 +43,20 @@
 
                     <label asp-for="Password"></label>
 
-                    <input asp-for="Password" class="form-control" />
+                    <div class="input-group">
+
+                        <input asp-for="Password" type="password" class="form-control password-field" />
+
+                        <button type="button" class="btn btn-outline-secondary togglePassword">
+
+                            <i class="fas fa-eye"></i>
+
+                        </button>
+
+                    </div>
+
+                    <span asp-validation-for="Password" class="text-danger">
+                    </span>
 
                 </div>
 
@@ -89,6 +102,20 @@
 
                 </div>
 
+                <div class="col-md-6 mb-3" id="airportSection" style="display:none;">
+
+                    <label>Airport</label>
+
+                    <select asp-for="AirportId" asp-items="Model.Airports" class="form-select">
+
+                        <option value="">
+                            Select Airport
+                        </option>
+
+                    </select>
+
+                </div>
+
             </div>
 
         </div>
@@ -119,6 +146,8 @@
 
             $('#fuelCompanySection').hide();
 
+            $('#airportSection').hide();
+
             if (role === 'AirlineExecutive') {
 
                 $('#airlineSection').show();
@@ -128,6 +157,30 @@
 
                 $('#fuelCompanySection').show();
             }
+
+            if (role === 'FuelCoordinator') {
+
+                $('#airportSection').show();
+            }
+        });
+
+        $('.togglePassword').click(function () {
+
+            let input =
+                $(this)
+                    .closest('.input-group')
+                    .find('input');
+
+            let type =
+                input.attr('type') === 'password'
+                    ? 'text'
+                    : 'password';
+
+            input.attr('type', type);
+
+            $(this)
+                .find('i')
+                .toggleClass('fa-eye fa-eye-slash');
         });
 
     </script>

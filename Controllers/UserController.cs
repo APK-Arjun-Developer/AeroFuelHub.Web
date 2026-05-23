@@ -92,6 +92,8 @@ public class UserController : Controller
 
             FuelCompanyId = model.FuelCompanyId,
 
+            AirportId = model.AirportId,
+
             EmailConfirmed = true,
 
             CreatedAt = DateTime.UtcNow
@@ -104,6 +106,7 @@ public class UserController : Controller
 
         if (!result.Succeeded)
         {
+            _notyf.Error("Failed to create user");
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError(
@@ -175,6 +178,19 @@ public class UserController : Controller
         if (user == null)
             return NotFound();
 
+        var existingUser =
+    await _userManager.FindByEmailAsync(model.Email);
+
+        if (existingUser != null
+            && existingUser.Id != model.Id)
+        {
+            _notyf.Error("Email already exists");
+
+            await LoadEditDropdowns(model);
+
+            return View(model);
+        }
+
         user.FullName = model.FullName;
 
         user.Email = model.Email;
@@ -196,7 +212,24 @@ public class UserController : Controller
             user,
             model.Role);
 
-        await _userManager.UpdateAsync(user);
+        var updateResult =
+    await _userManager.UpdateAsync(user);
+
+        if (!updateResult.Succeeded)
+        {
+            _notyf.Error("Failed to update user");
+
+            foreach (var error in updateResult.Errors)
+            {
+                ModelState.AddModelError(
+                    "",
+                    error.Description);
+            }
+
+            await LoadEditDropdowns(model);
+
+            return View(model);
+        }
 
         _notyf.Success("User updated successfully");
 
@@ -220,7 +253,15 @@ public class UserController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        await _userManager.DeleteAsync(user);
+        var result =
+    await _userManager.DeleteAsync(user);
+
+        if (!result.Succeeded)
+        {
+            _notyf.Error("Failed to delete user");
+
+            return RedirectToAction(nameof(Index));
+        }
 
         _notyf.Success("User deleted successfully");
 
@@ -256,6 +297,14 @@ public class UserController : Controller
                 Text = x.Name
             })
             .ToListAsync();
+
+        model.Airports = await _context.Airports
+            .Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.Name
+            })
+            .ToListAsync();
     }
 
     private async Task LoadEditDropdowns(EditUserViewModel model)
@@ -280,6 +329,14 @@ public class UserController : Controller
 
         model.FuelCompanies =
             await _context.FuelCompanies
+            .Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.Name
+            })
+            .ToListAsync();
+
+        model.Airports = await _context.Airports
             .Select(x => new SelectListItem
             {
                 Value = x.Id.ToString(),

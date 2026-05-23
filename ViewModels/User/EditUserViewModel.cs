@@ -26,4 +26,11 @@ public class EditUserViewModel
     public List<SelectListItem> Airlines { get; set; } = [];
 
     public List<SelectListItem> FuelCompanies { get; set; } = [];
+
+    public int? AirportId { get; set; }
+
+    public IEnumerable<SelectListItem>
+        Airports
+    { get; set; }
+        = new List<SelectListItem>();
 }

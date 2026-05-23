@@ -53,6 +53,22 @@ public class FuelTransactionController : Controller
             return View(model);
         }
 
+        var currentUser =
+            await _userManager.GetUserAsync(User);
+
+        if (User.IsInRole(Roles.Admin) && !model.AirportId.HasValue)
+        {
+            ModelState.AddModelError(
+                "AirportId",
+                "Airport is required");
+        }
+
+        if (User.IsInRole(Roles.FuelCoordinator))
+        {
+            model.AirportId =
+                currentUser!.AirportId;
+        }
+
         var transaction = new FuelTransaction
         {
             TransactionNumber = GenerateTransactionNumber(),
@@ -63,7 +79,7 @@ public class FuelTransactionController : Controller
 
             AircraftId = model.AircraftId,
 
-            AirportId = model.AirportId,
+            AirportId = model.AirportId!.Value,
 
             FuelCompanyId = model.FuelCompanyId,
 
@@ -318,13 +334,36 @@ public class FuelTransactionController : Controller
             })
             .ToListAsync();
 
-        model.Airports = await _context.Airports
-            .Select(x => new SelectListItem
-            {
-                Value = x.Id.ToString(),
-                Text = x.Name
-            })
-            .ToListAsync();
+        var currentUser =
+    await _userManager.GetUserAsync(User);
+
+        if (User.IsInRole(Roles.Admin))
+        {
+            model.Airports =
+                await _context.Airports
+                .Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.Name
+                })
+                .ToListAsync();
+        }
+        else if (User.IsInRole(Roles.FuelCoordinator))
+        {
+            model.Airports =
+                await _context.Airports
+                .Where(x =>
+                    x.Id == currentUser!.AirportId)
+                .Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.Name
+                })
+                .ToListAsync();
+
+            model.AirportId =
+                currentUser!.AirportId;
+        }
 
         model.FuelCompanies =
             await _context.FuelCompanies

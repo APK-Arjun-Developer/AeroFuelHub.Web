@@ -53,21 +53,22 @@
 
                 </div>
 
-                <div class="col-md-6 mb-3">
+                @if (User.IsInRole("Admin"))
+                {
+                    <div class="col-md-6 mb-3">
 
-                    <label class="form-label">
-                        Airport
-                    </label>
+                        <label>Airport</label>
 
-                    <select asp-for="AirportId" asp-items="Model.Airports" class="form-select">
+                        <select asp-for="AirportId" asp-items="Model.Airports" class="form-select">
 
-                        <option value="">
-                            Select Airport
-                        </option>
+                            <option value="">
+                                Select Airport
+                            </option>
 
-                    </select>
+                        </select>
 
-                </div>
+                    </div>
+                }
 
                 <div class="col-md-6 mb-3">
 

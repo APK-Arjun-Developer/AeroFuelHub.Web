@@ -11,8 +11,7 @@ public class CreateFuelTransactionViewModel
     [Required]
     public int AircraftId { get; set; }
 
-    [Required]
-    public int AirportId { get; set; }
+    public int? AirportId { get; set; }
 
     [Required]
     public int FuelCompanyId { get; set; }
