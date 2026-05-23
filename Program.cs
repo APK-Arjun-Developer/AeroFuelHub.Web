@@ -5,6 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using AeroFuelHub.Web.Data.Seeders;
 using AspNetCoreHero.ToastNotification;
 using AspNetCoreHero.ToastNotification.Extensions;
+using AeroFuelHub.Web.Repositories.Interfaces;
+using AeroFuelHub.Web.Repositories.Implementations;
+using AeroFuelHub.Web.Services.Interfaces;
+using AeroFuelHub.Web.Services.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +31,9 @@ builder.Services
     .AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
+
+builder.Services.AddScoped<IFuelTransactionRepository, FuelTransactionRepository>();
+builder.Services.AddScoped<IFuelTransactionService, FuelTransactionService>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
