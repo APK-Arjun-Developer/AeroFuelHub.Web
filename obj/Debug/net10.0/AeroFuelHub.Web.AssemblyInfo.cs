@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AeroFuelHub.Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0ca8c8c58ef90d5f2683fcc5417ad32ee3a701d7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ba7a732d23254aeacad182697b97c17afb7ad259")]
 [assembly: System.Reflection.AssemblyProductAttribute("AeroFuelHub.Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AeroFuelHub.Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

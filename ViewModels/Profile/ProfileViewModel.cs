@@ -12,4 +12,13 @@ public class ProfileViewModel
     [EmailAddress]
     public string Email { get; set; }
         = string.Empty;
+
+    public string Role { get; set; }
+        = string.Empty;
+
+    public string? Airline { get; set; }
+
+    public string? FuelCompany { get; set; }
+
+    public string? Airport { get; set; }
 }

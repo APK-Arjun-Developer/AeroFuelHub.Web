@@ -9,7 +9,7 @@
     <div class="card-header">
 
         <h3 class="card-title">
-            Profile
+            My Profile
         </h3>
 
     </div>
@@ -18,33 +18,76 @@
 
         <div class="card-body">
 
-            <div class="mb-3">
+            <div class="row">
 
-                <label asp-for="FullName"></label>
+                <div class="col-md-6 mb-3">
 
-                <input asp-for="FullName" class="form-control" />
+                    <label asp-for="FullName"></label>
+
+                    <input asp-for="FullName" class="form-control" />
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label asp-for="Email"></label>
+
+                    <input asp-for="Email" class="form-control" />
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label>Role</label>
+
+                    <input value="@Model.Role" class="form-control" readonly />
+
+                </div>
+
+                @if (Model.Role == "AirlineExecutive")
+                {
+                    <div class="col-md-6 mb-3">
+
+                        <label>Airline</label>
+
+                        <input value="@Model.Airline" class="form-control" readonly />
+
+                    </div>
+                }
+
+                @if (Model.Role == "FuelSupplyExecutive")
+                {
+                    <div class="col-md-6 mb-3">
+
+                        <label>Fuel Company</label>
+
+                        <input value="@Model.FuelCompany" class="form-control" readonly />
+
+                    </div>
+                }
+
+                @if (Model.Role == "FuelCoordinator")
+                {
+                    <div class="col-md-6 mb-3">
+
+                        <label>Airport</label>
+
+                        <input value="@Model.Airport" class="form-control" readonly />
+
+                    </div>
+                }
 
             </div>
 
-            <div class="mb-3">
+            <div class="card-footer">
 
-                <label asp-for="Email"></label>
+                <button class="btn btn-primary">
 
-                <input asp-for="Email" class="form-control" />
+                    Update Profile
+
+                </button>
 
             </div>
-
-        </div>
-
-        <div class="card-footer">
-
-            <button class="btn btn-primary">
-
-                Update Profile
-
-            </button>
-
-        </div>
 
     </form>
 

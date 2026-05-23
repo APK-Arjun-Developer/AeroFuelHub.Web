@@ -4,6 +4,8 @@ using AspNetCoreHero.ToastNotification.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using AeroFuelHub.Web.Data;
 
 namespace AeroFuelHub.Web.Controllers;
 
@@ -14,27 +16,50 @@ public class ProfileController : Controller
         _userManager;
 
     private readonly INotyfService _notyf;
+    private readonly ApplicationDbContext _context;
 
     public ProfileController(
         UserManager<ApplicationUser> userManager,
-        INotyfService notyf)
+        INotyfService notyf,
+        ApplicationDbContext context)
     {
         _userManager = userManager;
 
         _notyf = notyf;
+
+        _context = context;
     }
 
     [HttpGet]
     public async Task<IActionResult> Index()
     {
         var user =
-            await _userManager.GetUserAsync(User);
+            await _context.Users
+            .Include(x => x.Airline)
+            .Include(x => x.FuelCompany)
+            .Include(x => x.Airport)
+            .FirstOrDefaultAsync(x =>
+                x.UserName == User.Identity!.Name);
+
+        if (user == null)
+            return NotFound();
+
+        var roles =
+            await _userManager.GetRolesAsync(user);
 
         var model = new ProfileViewModel
         {
-            FullName = user!.FullName,
+            FullName = user.FullName,
 
-            Email = user.Email!
+            Email = user.Email!,
+
+            Role = roles.FirstOrDefault() ?? "",
+
+            Airline = user.Airline?.Name,
+
+            FuelCompany = user.FuelCompany?.Name,
+
+            Airport = user.Airport?.Name
         };
 
         return View(model);

@@ -275,9 +275,10 @@
                         {
                             <li class="nav-item">
                                 <a asp-controller="Dashboard" asp-action="Admin"
-                                    class="nav-link @(currentAction == "Admin" ? "active" : "")">
+                                    class="nav-link @(currentController == "Dashboard"
+                                                                                                                                                                                             && currentAction == "Admin" ? "active" : "")">
 
-                                    <i class="nav-icon fas fa-chart-line"></i>
+                                <i class="nav-icon fas fa-chart-line"></i>
 
                                     <p>Dashboard</p>
                                 </a>
@@ -285,19 +286,27 @@
 
                             <li class="nav-item">
                                 <a asp-controller="FuelTransaction" asp-action="Create"
-                                    class="nav-link @(currentAction == "Create" ? "active" : "")">
+                                    class="nav-link @(
+                                                                                                                                                                                                                                                                            currentController == "FuelTransaction"
+                                                                                                                                                                                                                                                                            && currentAction == "Create"
+                                                                                                                                                                                                                                                                                ? "active"
+                                                                                                                                                                                                                                                                                : "")">
 
-                                    <i class="nav-icon fas fa-plus-circle"></i>
+                                <i class="nav-icon fas fa-plus-circle"></i>
 
                                     <p>Create Fuel Entry</p>
                                 </a>
                             </li>
 
                             <li class="nav-item">
-                                <a asp-controller="User" asp-action="Index"
-                                    class="nav-link @(currentController == "User" ? "active" : "")">
+                                <a asp-controller="User" asp-action="Index" class="nav-link @(currentController == "User"
+                                                                        && (
+                                                                            currentAction == "Index"
+                                                                            || currentAction == "Create"
+                                                                            || currentAction == "Edit"
+                                                                        ) ? "active" : "")">
 
-                                    <i class="nav-icon fas fa-users"></i>
+                                <i class="nav-icon fas fa-users"></i>
 
                                     <p>Users</p>
                                 </a>
@@ -305,9 +314,12 @@
 
                             <li class="nav-item">
                                 <a asp-controller="FuelTransaction" asp-action="History"
-                                    class="nav-link @(currentAction == "History" ? "active" : "")">
+                                    class="nav-link @(currentController == "FuelTransaction"
+                                                                                                                                                                                                          && currentAction == "History"
+                                                                                                                                                                                                          ? "active"
+                                                                                                                                                                                                          : "")">
 
-                                    <i class="nav-icon fas fa-gas-pump"></i>
+                                <i class="nav-icon fas fa-gas-pump"></i>
 
                                     <p>Fuel Transactions</p>
                                 </a>
@@ -315,22 +327,24 @@
 
                             <li class="nav-item">
                                 <a asp-controller="FuelTransaction" asp-action="Reports"
-                                    class="nav-link @(currentAction == "Reports" ? "active" : "")">
+                                    class="nav-link @(currentController == "FuelTransaction"
+                                                                                                                                                                                     && currentAction == "Reports" ? "active" : "")">
 
-                                    <i class="nav-icon fas fa-chart-bar"></i>
+                                <i class="nav-icon fas fa-chart-bar"></i>
 
                                     <p>Reports</p>
                                 </a>
                             </li>
-                        }
+                                                }
 
                         @if (User.IsInRole("FuelCoordinator"))
                         {
                             <li class="nav-item">
                                 <a asp-controller="Dashboard" asp-action="Coordinator"
-                                    class="nav-link @(currentAction == "Coordinator" ? "active" : "")">
+                                    class="nav-link @(currentController == "Dashboard"
+                                                                                                                                                               && currentAction == "Coordinator" ? "active" : "")">
 
-                                    <i class="nav-icon fas fa-chart-pie"></i>
+                                <i class="nav-icon fas fa-chart-pie"></i>
 
                                     <p>Dashboard</p>
                                 </a>
@@ -338,9 +352,13 @@
 
                             <li class="nav-item">
                                 <a asp-controller="FuelTransaction" asp-action="Create"
-                                    class="nav-link @(currentAction == "Create" ? "active" : "")">
+                                    class="nav-link @(
+                                                                                                                                                                                                                                            currentController == "FuelTransaction"
+                                                                                                                                                                                                                                            && currentAction == "Create"
+                                                                                                                                                                                                                                                ? "active"
+                                                                                                                                                                                                                                                : "")">
 
-                                    <i class="nav-icon fas fa-plus-circle"></i>
+                                <i class="nav-icon fas fa-plus-circle"></i>
 
                                     <p>Create Fuel Entry</p>
                                 </a>
@@ -348,9 +366,10 @@
 
                             <li class="nav-item">
                                 <a asp-controller="FuelTransaction" asp-action="History"
-                                    class="nav-link @(currentAction == "History" ? "active" : "")">
+                                    class="nav-link @(currentController == "FuelTransaction"
+                                                                                                                                                                                                                     && currentAction == "History" ? "active" : "")">
 
-                                    <i class="nav-icon fas fa-history"></i>
+                                <i class="nav-icon fas fa-history"></i>
 
                                     <p>Transaction History</p>
                                 </a>
@@ -358,22 +377,24 @@
 
                             <li class="nav-item">
                                 <a asp-controller="FuelTransaction" asp-action="Reports"
-                                    class="nav-link @(currentAction == "Reports" ? "active" : "")">
+                                    class="nav-link @(currentController == "FuelTransaction"
+                                                                                                                                                                                     && currentAction == "Reports" ? "active" : "")">
 
-                                    <i class="nav-icon fas fa-chart-bar"></i>
+                                <i class="nav-icon fas fa-chart-bar"></i>
 
                                     <p>Reports</p>
                                 </a>
                             </li>
-                        }
+                                                }
 
                         @if (User.IsInRole("AirlineExecutive"))
                         {
                             <li class="nav-item">
                                 <a asp-controller="Dashboard" asp-action="Airline"
-                                    class="nav-link @(currentAction == "Airline" ? "active" : "")">
+                                    class="nav-link @(currentController == "Dashboard"
+                                                                                                                                                           && currentAction == "Airline" ? "active" : "")">
 
-                                    <i class="nav-icon fas fa-chart-line"></i>
+                                <i class="nav-icon fas fa-chart-line"></i>
 
                                     <p>Dashboard</p>
                                 </a>
@@ -381,9 +402,10 @@
 
                             <li class="nav-item">
                                 <a asp-controller="FuelTransaction" asp-action="History"
-                                    class="nav-link @(currentAction == "History" ? "active" : "")">
+                                    class="nav-link @(currentController == "FuelTransaction"
+                                                                                                                                                     && currentAction == "History" ? "active" : "")">
 
-                                    <i class="nav-icon fas fa-gas-pump"></i>
+                                <i class="nav-icon fas fa-gas-pump"></i>
 
                                     <p>Fuel Transactions</p>
                                 </a>
@@ -391,22 +413,24 @@
 
                             <li class="nav-item">
                                 <a asp-controller="FuelTransaction" asp-action="Reports"
-                                    class="nav-link @(currentAction == "Reports" ? "active" : "")">
+                                    class="nav-link @(currentController == "FuelTransaction"
+                                                                                                                                                                                         && currentAction == "Reports" ? "active" : "")">
 
-                                    <i class="nav-icon fas fa-chart-bar"></i>
+                                <i class="nav-icon fas fa-chart-bar"></i>
 
                                     <p>Reports</p>
                                 </a>
                             </li>
-                        }
+                                                }
 
                         @if (User.IsInRole("FuelSupplyExecutive"))
                         {
                             <li class="nav-item">
                                 <a asp-controller="Dashboard" asp-action="FuelSupply"
-                                    class="nav-link @(currentAction == "FuelSupply" ? "active" : "")">
+                                    class="nav-link @(currentController == "Dashboard"
+                                                                                                                          && currentAction == "FuelSupply" ? "active" : "")">
 
-                                    <i class="nav-icon fas fa-chart-pie"></i>
+                                <i class="nav-icon fas fa-chart-pie"></i>
 
                                     <p>Dashboard</p>
                                 </a>
@@ -414,9 +438,10 @@
 
                             <li class="nav-item">
                                 <a asp-controller="FuelTransaction" asp-action="History"
-                                    class="nav-link @(currentAction == "History" ? "active" : "")">
+                                    class="nav-link @(currentController == "FuelTransaction"
+                                                                                                                     && currentAction == "History" ? "active" : "")">
 
-                                    <i class="nav-icon fas fa-gas-pump"></i>
+                                <i class="nav-icon fas fa-gas-pump"></i>
 
                                     <p>Fuel Transactions</p>
                                 </a>
@@ -424,14 +449,15 @@
 
                             <li class="nav-item">
                                 <a asp-controller="FuelTransaction" asp-action="Reports"
-                                    class="nav-link @(currentAction == "Reports" ? "active" : "")">
+                                    class="nav-link @(currentController == "FuelTransaction"
+                                                                                                                                                                                             && currentAction == "Reports" ? "active" : "")">
 
-                                    <i class="nav-icon fas fa-chart-bar"></i>
+                                <i class="nav-icon fas fa-chart-bar"></i>
 
                                     <p>Reports</p>
                                 </a>
                             </li>
-                        }
+                                                }
 
                     </ul>
 

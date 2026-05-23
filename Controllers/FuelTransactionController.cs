@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using QuestPDF.Fluent;
-using QuestPDF.Helpers;
+using Microsoft.AspNetCore.Identity;
 using QuestPDF.Infrastructure;
 using AspNetCoreHero.ToastNotification.Abstractions;
 using ClosedXML.Excel;
@@ -20,12 +20,15 @@ public class FuelTransactionController : Controller
 {
     private readonly ApplicationDbContext _context;
     private readonly INotyfService _notyf;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public FuelTransactionController(ApplicationDbContext context, INotyfService notyf)
+    public FuelTransactionController(ApplicationDbContext context, INotyfService notyf, UserManager<ApplicationUser> userManager)
     {
         _context = context;
 
         _notyf = notyf;
+
+        _userManager = userManager;
     }
 
     [HttpGet]
@@ -92,15 +95,10 @@ public class FuelTransactionController : Controller
     }
 
     public async Task<IActionResult> History(
-        string? search)
+    string? search)
     {
-        var query = _context.FuelTransactions
-            .Include(x => x.Airline)
-            .Include(x => x.Aircraft)
-            .Include(x => x.Airport)
-            .Include(x => x.FuelCompany)
-            .Where(x => !x.IsDeleted)
-            .AsQueryable();
+        var query =
+            await GetFilteredTransactionsQuery();
 
         if (!string.IsNullOrWhiteSpace(search))
         {
@@ -118,11 +116,8 @@ public class FuelTransactionController : Controller
 
     public async Task<IActionResult> Details(int id)
     {
-        var transaction = await _context.FuelTransactions
-            .Include(x => x.Airline)
-            .Include(x => x.Aircraft)
-            .Include(x => x.Airport)
-            .Include(x => x.FuelCompany)
+        var transaction =
+            await (await GetFilteredTransactionsQuery())
             .FirstOrDefaultAsync(x => x.Id == id);
 
         if (transaction == null)
@@ -136,7 +131,7 @@ public class FuelTransactionController : Controller
         QuestPDF.Settings.License =
             LicenseType.Community;
 
-        var transaction = await _context.FuelTransactions
+        var transaction = await (await GetFilteredTransactionsQuery())
             .Include(x => x.Airline)
             .Include(x => x.Aircraft)
             .Include(x => x.Airport)
@@ -205,14 +200,12 @@ public class FuelTransactionController : Controller
             $"Invoice-{transaction.TransactionNumber}.pdf");
     }
 
-    public async Task<IActionResult> Reports(DateTime? startDate, DateTime? endDate)
+    public async Task<IActionResult> Reports(
+        DateTime? startDate,
+        DateTime? endDate)
     {
-        var query = _context.FuelTransactions
-            .Include(x => x.Airline)
-            .Include(x => x.Airport)
-            .Include(x => x.FuelCompany)
-            .Where(x => !x.IsDeleted)
-            .AsQueryable();
+        var query =
+            await GetFilteredTransactionsQuery();
 
         if (startDate.HasValue)
         {
@@ -227,7 +220,8 @@ public class FuelTransactionController : Controller
         }
 
         var data = await query
-            .OrderByDescending(x => x.TransactionDate)
+            .OrderByDescending(x =>
+                x.TransactionDate)
             .ToListAsync();
 
         return View(data);
@@ -235,10 +229,8 @@ public class FuelTransactionController : Controller
 
     public async Task<IActionResult> ExportExcel()
     {
-        var transactions = await _context.FuelTransactions
-            .Include(x => x.Airline)
-            .Include(x => x.Airport)
-            .Include(x => x.FuelCompany)
+        var transactions =
+            await (await GetFilteredTransactionsQuery())
             .ToListAsync();
 
         using var workbook = new XLWorkbook();
@@ -342,6 +334,52 @@ public class FuelTransactionController : Controller
                 Text = x.Name
             })
             .ToListAsync();
+    }
+
+    private async Task<IQueryable<FuelTransaction>>
+    GetFilteredTransactionsQuery()
+    {
+        var currentUser =
+            await _userManager.GetUserAsync(User);
+
+        var roles =
+            await _userManager.GetRolesAsync(currentUser!);
+
+        var query = _context.FuelTransactions
+            .Include(x => x.Airline)
+            .Include(x => x.Aircraft)
+            .Include(x => x.Airport)
+            .Include(x => x.FuelCompany)
+            .Where(x => !x.IsDeleted)
+            .AsQueryable();
+
+        if (roles.Contains(Roles.Admin))
+        {
+            return query;
+        }
+
+        if (roles.Contains(Roles.AirlineExecutive))
+        {
+            query = query.Where(x =>
+                x.AirlineId ==
+                currentUser!.AirlineId);
+        }
+
+        if (roles.Contains(Roles.FuelSupplyExecutive))
+        {
+            query = query.Where(x =>
+                x.FuelCompanyId ==
+                currentUser!.FuelCompanyId);
+        }
+
+        if (roles.Contains(Roles.FuelCoordinator))
+        {
+            query = query.Where(x =>
+                x.AirportId ==
+                currentUser!.AirportId);
+        }
+
+        return query;
     }
 
     private string GenerateTransactionNumber()

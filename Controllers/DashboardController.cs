@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using AeroFuelHub.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using AeroFuelHub.Web.ViewModels.Dashboard;
+using Microsoft.AspNetCore.Identity;
+using AeroFuelHub.Web.Models.Entities;
 
 namespace AeroFuelHub.Web.Controllers;
 
@@ -11,10 +13,13 @@ namespace AeroFuelHub.Web.Controllers;
 public class DashboardController : Controller
 {
     private readonly ApplicationDbContext _context;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public DashboardController(ApplicationDbContext context)
+    public DashboardController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
     {
         _context = context;
+
+        _userManager = userManager;
     }
 
     [Authorize(Roles = Roles.Admin)]
@@ -110,20 +115,179 @@ public class DashboardController : Controller
     }
 
     [Authorize(Roles = Roles.AirlineExecutive)]
-    public IActionResult Airline()
+
+    [Authorize(Roles = Roles.AirlineExecutive)]
+    public async Task<IActionResult> Airline()
     {
-        return View();
+        var user =
+            await _userManager.GetUserAsync(User);
+
+        var query =
+            _context.FuelTransactions
+            .Include(x => x.Airline)
+            .Where(x =>
+                !x.IsDeleted &&
+                x.AirlineId == user!.AirlineId);
+
+        var model =
+            new RoleDashboardViewModel
+            {
+                Title =
+                    user.Airline?.Name ??
+                    "Airline Dashboard",
+
+                TotalTransactions =
+                    await query.CountAsync(),
+
+                TotalFuelQuantity =
+                    await query.SumAsync(x =>
+                        (decimal?)x.FuelQuantity) ?? 0,
+
+                TotalRevenue =
+                    await query.SumAsync(x =>
+                        (decimal?)x.TotalAmount) ?? 0,
+
+                RecentTransactions =
+                    await query
+                    .OrderByDescending(x =>
+                        x.TransactionDate)
+                    .Take(5)
+                    .Select(x =>
+                        new RecentTransactionViewModel
+                        {
+                            TransactionNumber =
+                                x.TransactionNumber,
+
+                            Airline =
+                                x.Airline!.Name,
+
+                            TotalAmount =
+                                x.TotalAmount,
+
+                            TransactionDate =
+                                x.TransactionDate
+                        })
+                    .ToListAsync()
+            };
+
+        return View("RoleDashboard", model);
     }
 
     [Authorize(Roles = Roles.FuelSupplyExecutive)]
-    public IActionResult FuelSupply()
+    public async Task<IActionResult> FuelSupply()
     {
-        return View();
+        var user =
+            await _userManager.GetUserAsync(User);
+
+        var query =
+            _context.FuelTransactions
+            .Include(x => x.FuelCompany)
+            .Include(x => x.Airline)
+            .Where(x =>
+                !x.IsDeleted &&
+                x.FuelCompanyId ==
+                user!.FuelCompanyId);
+
+        var model =
+            new RoleDashboardViewModel
+            {
+                Title =
+                    user.FuelCompany?.Name ??
+                    "Fuel Company Dashboard",
+
+                TotalTransactions =
+                    await query.CountAsync(),
+
+                TotalFuelQuantity =
+                    await query.SumAsync(x =>
+                        (decimal?)x.FuelQuantity) ?? 0,
+
+                TotalRevenue =
+                    await query.SumAsync(x =>
+                        (decimal?)x.TotalAmount) ?? 0,
+
+                RecentTransactions =
+                    await query
+                    .OrderByDescending(x =>
+                        x.TransactionDate)
+                    .Take(5)
+                    .Select(x =>
+                        new RecentTransactionViewModel
+                        {
+                            TransactionNumber =
+                                x.TransactionNumber,
+
+                            Airline =
+                                x.Airline!.Name,
+
+                            TotalAmount =
+                                x.TotalAmount,
+
+                            TransactionDate =
+                                x.TransactionDate
+                        })
+                    .ToListAsync()
+            };
+
+        return View("RoleDashboard", model);
     }
 
     [Authorize(Roles = Roles.FuelCoordinator)]
-    public IActionResult Coordinator()
+    public async Task<IActionResult> Coordinator()
     {
-        return View();
+        var user =
+            await _userManager.GetUserAsync(User);
+
+        var query =
+            _context.FuelTransactions
+            .Include(x => x.Airport)
+            .Include(x => x.Airline)
+            .Where(x =>
+                !x.IsDeleted &&
+                x.AirportId ==
+                user!.AirportId);
+
+        var model =
+            new RoleDashboardViewModel
+            {
+                Title =
+                    user.Airport?.Name ??
+                    "Airport Dashboard",
+
+                TotalTransactions =
+                    await query.CountAsync(),
+
+                TotalFuelQuantity =
+                    await query.SumAsync(x =>
+                        (decimal?)x.FuelQuantity) ?? 0,
+
+                TotalRevenue =
+                    await query.SumAsync(x =>
+                        (decimal?)x.TotalAmount) ?? 0,
+
+                RecentTransactions =
+                    await query
+                    .OrderByDescending(x =>
+                        x.TransactionDate)
+                    .Take(5)
+                    .Select(x =>
+                        new RecentTransactionViewModel
+                        {
+                            TransactionNumber =
+                                x.TransactionNumber,
+
+                            Airline =
+                                x.Airline!.Name,
+
+                            TotalAmount =
+                                x.TotalAmount,
+
+                            TransactionDate =
+                                x.TransactionDate
+                        })
+                    .ToListAsync()
+            };
+
+        return View("RoleDashboard", model);
     }
 }

@@ -8,5 +8,5 @@ Thumbs.db
 
 # Logs
 *.log
-bin/*
-obj/*
+bin/Debug
+obj/Debug
