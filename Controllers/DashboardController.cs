@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using AeroFuelHub.Web.ViewModels.Dashboard;
 using Microsoft.AspNetCore.Identity;
 using AeroFuelHub.Web.Models.Entities;
+using AeroFuelHub.Web.Services.Interfaces;
 
 namespace AeroFuelHub.Web.Controllers;
 
@@ -15,11 +16,15 @@ public class DashboardController : Controller
     private readonly ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public DashboardController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+    private readonly IFuelTransactionService _fuelTransactionService;
+
+    public DashboardController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IFuelTransactionService fuelTransactionService)
     {
         _context = context;
 
         _userManager = userManager;
+
+        _fuelTransactionService = fuelTransactionService;
     }
 
     [Authorize(Roles = Roles.Admin)]
@@ -115,19 +120,14 @@ public class DashboardController : Controller
     }
 
     [Authorize(Roles = Roles.AirlineExecutive)]
-
-    [Authorize(Roles = Roles.AirlineExecutive)]
     public async Task<IActionResult> Airline()
     {
         var user =
             await _userManager.GetUserAsync(User);
 
         var query =
-            _context.FuelTransactions
-            .Include(x => x.Airline)
-            .Where(x =>
-                !x.IsDeleted &&
-                x.AirlineId == user!.AirlineId);
+            await _fuelTransactionService
+            .GetDashboardQueryAsync(User);
 
         var model =
             new RoleDashboardViewModel
@@ -180,13 +180,8 @@ public class DashboardController : Controller
             await _userManager.GetUserAsync(User);
 
         var query =
-            _context.FuelTransactions
-            .Include(x => x.FuelCompany)
-            .Include(x => x.Airline)
-            .Where(x =>
-                !x.IsDeleted &&
-                x.FuelCompanyId ==
-                user!.FuelCompanyId);
+            await _fuelTransactionService
+            .GetDashboardQueryAsync(User);
 
         var model =
             new RoleDashboardViewModel
@@ -239,13 +234,8 @@ public class DashboardController : Controller
             await _userManager.GetUserAsync(User);
 
         var query =
-            _context.FuelTransactions
-            .Include(x => x.Airport)
-            .Include(x => x.Airline)
-            .Where(x =>
-                !x.IsDeleted &&
-                x.AirportId ==
-                user!.AirportId);
+            await _fuelTransactionService
+            .GetDashboardQueryAsync(User);
 
         var model =
             new RoleDashboardViewModel
