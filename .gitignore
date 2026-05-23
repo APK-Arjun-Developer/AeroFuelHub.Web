@@ -8,5 +8,6 @@ Thumbs.db
 
 # Logs
 *.log
-bin/Debug
-obj/Debug
+# Build output
+[Bb]in/
+[Oo]bj/
