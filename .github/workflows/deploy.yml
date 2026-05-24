@@ -6,13 +6,13 @@ on:
       - main
 
 jobs:
-
   build-and-deploy:
-
     runs-on: ubuntu-latest
 
-    steps:
+    env:
+      ASPNETCORE_ENVIRONMENT: Production
 
+    steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -22,18 +22,43 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Restore Dependencies
-        run: dotnet restore
+        run: dotnet restore AeroFuelHub.Web.sln
 
       - name: Build Project
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build AeroFuelHub.Web.csproj --configuration Release --no-restore
 
       - name: Publish Project
-        run: dotnet publish AeroFuelHub.Web/AeroFuelHub.Web.csproj -c Release -o publish
+        run: dotnet publish AeroFuelHub.Web.csproj -c Release --no-build -o ./publish
+
+      - name: Create appsettings.Production.json from GitHub Secret
+        env:
+          CONNECTION_STRING: ${{ secrets.PRODUCTION_CONNECTION_STRING }}
+        run: |
+          if [ -z "$CONNECTION_STRING" ]; then
+            echo "::error::GitHub secret PRODUCTION_CONNECTION_STRING is not set."
+            exit 1
+          fi
+          jq -n \
+            --arg cs "$CONNECTION_STRING" \
+            '{
+              "Logging": {
+                "LogLevel": {
+                  "Default": "Warning",
+                  "Microsoft.AspNetCore": "Warning",
+                  "Microsoft.EntityFrameworkCore": "Warning"
+                }
+              },
+              "ConnectionStrings": {
+                "DefaultConnection": $cs
+              }
+            }' > ./publish/appsettings.Production.json
 
       - name: Deploy to MonsterASP via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: publish/
+          local-dir: ./publish/
+          server-dir: /wwwroot/
+          dangerous-clean-slate: false

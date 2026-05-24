@@ -50,25 +50,28 @@ On first run, the app seeds roles, demo users, and master data (airlines, airpor
 
 ## Production (MonsterASP.NET)
 
-Configuration uses `ASPNETCORE_ENVIRONMENT=Production` and loads:
+**Do not commit** `appsettings.Production.json` (passwords). It is gitignored. Use `appsettings.Production.example.json` as a template for local testing only.
 
-1. `appsettings.json`
-2. `appsettings.Production.json` — put your MonsterASP connection string here before publish (file is gitignored)
-3. Host environment variables (alternative on MonsterASP)
+### Auto-deploy (GitHub Actions on `main`)
 
-**On MonsterASP control panel**, set:
+Add these **repository secrets** (Settings → Secrets and variables → Actions):
 
-| Setting | Value |
-|---------|--------|
-| Environment | `Production` |
-| Connection string name | `DefaultConnection` |
-| Connection string | Your MSSQL string from the database page |
+| Secret | Value |
+|--------|--------|
+| `FTP_SERVER` | MonsterASP host, e.g. `site12345.siteasp.net` (no `ftp://`) |
+| `FTP_USERNAME` | FTP username from Deploy page |
+| `FTP_PASSWORD` | FTP password |
+| `PRODUCTION_CONNECTION_STRING` | Full SQL connection string from MonsterASP MSSQL page |
 
-Or set environment variable:
+On each push to `main`, the workflow builds in **Release**, creates `appsettings.Production.json` from the secret, and uploads to `/wwwroot/` via FTP.
 
-`ConnectionStrings__DefaultConnection` = your MonsterASP SQL connection string
+In MonsterASP, set **`ASPNETCORE_ENVIRONMENT`** = `Production` (recommended).
 
-Migrations run automatically on startup (`Database.MigrateAsync()`). Republish after code changes.
+Migrations run automatically on startup (`Database.MigrateAsync()`).
+
+### Manual publish (Visual Studio)
+
+Copy `appsettings.Production.example.json` to `appsettings.Production.json`, fill in your connection string, then Publish. That file stays on your machine only.
 
 ## Demo Credentials
 
