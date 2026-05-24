@@ -95,17 +95,51 @@ public class FuelTransactionService : IFuelTransactionService
         return (true, null, null);
     }
 
-    public async Task<List<FuelTransaction>> GetHistoryAsync(string? search, ClaimsPrincipal user)
+    public async Task<FuelTransactionHistoryViewModel> GetHistoryAsync(string? search, int page, ClaimsPrincipal user)
     {
+        page = page < 1 ? 1 : page;
+        var pageSize = FuelTransactionHistoryViewModel.DefaultPageSize;
+
         var query = await GetFilteredTransactionsQueryAsync(user);
         if (!string.IsNullOrWhiteSpace(search))
             query = query.Where(x => x.TransactionNumber.Contains(search) || x.FlightNumber.Contains(search));
 
-        return await query.OrderByDescending(x => x.Id).ToListAsync();
+        query = query.OrderByDescending(x => x.Id);
+
+        var totalCount = await query.CountAsync();
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(x => new FuelTransactionListItemViewModel
+            {
+                Id = x.Id,
+                TransactionNumber = x.TransactionNumber,
+                AirlineName = x.Airline!.Name,
+                AircraftModel = x.Aircraft!.Model,
+                AirportName = x.Airport!.Name,
+                FuelCompanyName = x.FuelCompany!.Name,
+                FlightNumber = x.FlightNumber,
+                TotalAmount = x.TotalAmount,
+                TransactionDate = x.TransactionDate
+            })
+            .ToListAsync();
+
+        return new FuelTransactionHistoryViewModel
+        {
+            Search = search,
+            Page = page,
+            PageSize = pageSize,
+            TotalCount = totalCount,
+            Items = items
+        };
     }
 
-    public async Task<FuelTransaction?> GetDetailsAsync(int id, ClaimsPrincipal user)
-        => await (await GetFilteredTransactionsQueryAsync(user)).FirstOrDefaultAsync(x => x.Id == id);
+    public async Task<FuelTransactionDetailsViewModel?> GetDetailsAsync(int id, ClaimsPrincipal user)
+    {
+        var transaction = await (await GetFilteredTransactionsQueryAsync(user))
+            .FirstOrDefaultAsync(x => x.Id == id);
+        return transaction == null ? null : MapToDetailsViewModel(transaction);
+    }
 
     public async Task<FuelTransaction?> GetInvoiceDataAsync(int id, ClaimsPrincipal user)
         => await (await GetFilteredTransactionsQueryAsync(user)).FirstOrDefaultAsync(x => x.Id == id);
@@ -123,16 +157,13 @@ public class FuelTransactionService : IFuelTransactionService
     public Task<List<FuelTransaction>> GetExcelExportDataAsync(DateTime? startDate, DateTime? endDate, ClaimsPrincipal user)
         => GetReportsAsync(startDate, endDate, user);
 
-    public async Task<List<FuelTransaction>> GetDashboardTransactionsAsync(ClaimsPrincipal user, int take)
-        => await (await GetFilteredTransactionsQueryAsync(user))
-            .OrderByDescending(x => x.TransactionDate)
-            .Take(take)
-            .ToListAsync();
-
     public async Task<bool> SoftDeleteAsync(int id, ClaimsPrincipal user)
     {
-        var transaction = await (await GetFilteredTransactionsQueryAsync(user))
-            .FirstOrDefaultAsync(x => x.Id == id);
+        var authorized = await (await GetFilteredTransactionsQueryAsync(user)).AnyAsync(x => x.Id == id);
+        if (!authorized)
+            return false;
+
+        var transaction = await _fuelTransactionRepository.GetTrackedTransactionByIdAsync(id);
         if (transaction == null)
             return false;
 
@@ -173,6 +204,23 @@ public class FuelTransactionService : IFuelTransactionService
 
         return hasRoleFilter ? query : query.Where(x => false);
     }
+
+    private static FuelTransactionDetailsViewModel MapToDetailsViewModel(FuelTransaction x) => new()
+    {
+        Id = x.Id,
+        TransactionNumber = x.TransactionNumber,
+        AirlineName = x.Airline?.Name ?? string.Empty,
+        AircraftModel = x.Aircraft?.Model ?? string.Empty,
+        AirportName = x.Airport?.Name ?? string.Empty,
+        FuelCompanyName = x.FuelCompany?.Name ?? string.Empty,
+        FlightNumber = x.FlightNumber,
+        FuelQuantity = x.FuelQuantity,
+        PricePerLiter = x.PricePerLiter,
+        TotalAmount = x.TotalAmount,
+        Status = x.Status.ToString(),
+        Remarks = x.Remarks,
+        TransactionDate = x.TransactionDate
+    };
 
     private static string GenerateTransactionNumber()
     {

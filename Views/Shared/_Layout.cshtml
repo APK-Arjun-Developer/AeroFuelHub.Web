@@ -39,13 +39,15 @@
                                 <a class="dropdown-item" asp-controller="Profile" asp-action="Index">My Profile</a>
                                 <a class="dropdown-item" asp-controller="Profile" asp-action="ChangePassword">Change Password</a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" asp-controller="Account" asp-action="Logout">Logout</a>
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="px-0">
+                                    <button type="submit" class="dropdown-item">Logout</button>
+                                </form>
                             </div>
                         </div>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#" id="darkModeToggle">
-                            <i class="fas fa-moon"></i>
+                        <a class="nav-link" href="#" id="darkModeToggle" title="Switch to dark mode" aria-label="Switch to dark mode">
+                            <i class="fas fa-moon" id="darkModeIcon"></i>
                         </a>
                     </li>
                 }
@@ -90,15 +92,32 @@
     <script>
         const body = document.getElementById('bodyElement');
         const darkModeToggle = document.getElementById('darkModeToggle');
+        const darkModeIcon = document.getElementById('darkModeIcon');
+
+        function updateDarkModeIcon() {
+            if (!darkModeIcon || !darkModeToggle) return;
+
+            const isDark = body.classList.contains('dark-mode');
+            darkModeIcon.classList.remove('fa-moon', 'fa-sun');
+            darkModeIcon.classList.add(isDark ? 'fa-sun' : 'fa-moon');
+
+            const label = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+            darkModeToggle.setAttribute('title', label);
+            darkModeToggle.setAttribute('aria-label', label);
+        }
 
         if (localStorage.getItem('dark-mode') === 'enabled') {
             body.classList.add('dark-mode');
         }
+        updateDarkModeIcon();
 
         if (darkModeToggle) {
-            darkModeToggle.addEventListener('click', function () {
+            darkModeToggle.addEventListener('click', function (e) {
+                e.preventDefault();
                 body.classList.toggle('dark-mode');
                 localStorage.setItem('dark-mode', body.classList.contains('dark-mode') ? 'enabled' : 'disabled');
+                updateDarkModeIcon();
+                body.dispatchEvent(new CustomEvent('themechange'));
             });
         }
     </script>

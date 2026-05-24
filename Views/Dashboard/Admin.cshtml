@@ -173,28 +173,67 @@
 @section Scripts {
 
     <script>
-
-        const ctx =
-            document.getElementById('transactionChart');
-
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels:
-        @Html.Raw(
-            JsonSerializer.Serialize(
-                    Model.ChartLabels)),
-
-            datasets: [{
-                label: 'Transactions',
-                data:
-        @Html.Raw(
-                        JsonSerializer.Serialize(
-                                Model.ChartData))
-}]
+        function getChartTheme() {
+            const isDark = document.getElementById('bodyElement').classList.contains('dark-mode');
+            return {
+                text: isDark ? '#e9ecef' : '#495057',
+                grid: isDark ? '#454d55' : '#dee2e6',
+                bar: isDark ? 'rgba(54, 162, 235, 0.85)' : 'rgba(0, 123, 255, 0.75)',
+                barBorder: isDark ? 'rgba(54, 162, 235, 1)' : 'rgba(0, 123, 255, 1)'
+            };
         }
-    });
 
-</script>
+        function buildChart() {
+            const theme = getChartTheme();
+            const ctx = document.getElementById('transactionChart');
+
+            return new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: @Html.Raw(JsonSerializer.Serialize(Model.ChartLabels)),
+                    datasets: [{
+                        label: 'Transactions',
+                        data: @Html.Raw(JsonSerializer.Serialize(Model.ChartData)),
+                        backgroundColor: theme.bar,
+                        borderColor: theme.barBorder,
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            labels: { color: theme.text }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: theme.text },
+                            grid: { color: theme.grid }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: theme.text,
+                                stepSize: 1
+                            },
+                            grid: { color: theme.grid }
+                        }
+                    }
+                }
+            });
+        }
+
+        let transactionChart = buildChart();
+
+        document.getElementById('bodyElement')?.addEventListener('themechange', function () {
+            setTimeout(function () {
+                transactionChart.destroy();
+                transactionChart = buildChart();
+            }, 50);
+        });
+    </script>
 
 }

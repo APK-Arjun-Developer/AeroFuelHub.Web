@@ -15,6 +15,7 @@ public class ProfileRepository : IProfileRepository
     }
 
     public Task<ApplicationUser?> GetUserByUserNameWithRelationsAsync(string userName) => _context.Users
+        .AsNoTracking()
         .Include(x => x.Airline)
         .Include(x => x.FuelCompany)
         .Include(x => x.Airport)

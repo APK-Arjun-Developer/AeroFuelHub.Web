@@ -22,14 +22,14 @@ body {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
-.form-floating > .form-control-plaintext::placeholder,
-.form-floating > .form-control::placeholder {
+.form-floating>.form-control-plaintext::placeholder,
+.form-floating>.form-control::placeholder {
   color: var(--bs-secondary-color);
   text-align: end;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder,
-.form-floating > .form-control:focus::placeholder {
+.form-floating>.form-control-plaintext:focus::placeholder,
+.form-floating>.form-control:focus::placeholder {
   text-align: start;
 }
 
@@ -119,7 +119,7 @@ body.layout-fixed .content-wrapper {
   color: #fff !important;
 }
 
-.dark-mode .table > :not(caption) > * > * {
+.dark-mode .table> :not(caption)>*>* {
   background-color: #343a40 !important;
   color: #fff !important;
   box-shadow: none !important;
@@ -130,7 +130,7 @@ body.layout-fixed .content-wrapper {
   color: #fff !important;
 }
 
-.dark-mode .table tbody tr:hover > * {
+.dark-mode .table tbody tr:hover>* {
   background-color: #454d55 !important;
   color: #fff !important;
 }

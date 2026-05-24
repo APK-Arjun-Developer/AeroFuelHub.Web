@@ -18,6 +18,7 @@ public class FuelTransactionRepository : IFuelTransactionRepository
     public IQueryable<FuelTransaction> QueryTransactionsWithIncludes()
     {
         return _context.FuelTransactions
+            .AsNoTracking()
             .Include(x => x.Airline)
             .Include(x => x.Aircraft)
             .Include(x => x.Airport)
@@ -27,32 +28,38 @@ public class FuelTransactionRepository : IFuelTransactionRepository
     }
 
     public Task<List<SelectListItem>> GetAirlinesAsync() => _context.Airlines
+        .AsNoTracking()
         .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name })
         .ToListAsync();
 
     public Task<List<SelectListItem>> GetAircraftsAsync() => _context.Aircrafts
+        .AsNoTracking()
         .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Model })
         .ToListAsync();
 
     public Task<List<SelectListItem>> GetAirportsAsync() => _context.Airports
+        .AsNoTracking()
         .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name })
         .ToListAsync();
 
     public Task<List<SelectListItem>> GetAirportsByIdAsync(int airportId) => _context.Airports
+        .AsNoTracking()
         .Where(x => x.Id == airportId)
         .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name })
         .ToListAsync();
 
     public Task<List<SelectListItem>> GetFuelCompaniesAsync() => _context.FuelCompanies
+        .AsNoTracking()
         .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name })
         .ToListAsync();
 
     public Task<bool> AircraftBelongsToAirlineAsync(int aircraftId, int airlineId) =>
-        _context.Aircrafts.AnyAsync(x => x.Id == aircraftId && x.AirlineId == airlineId);
+        _context.Aircrafts.AsNoTracking().AnyAsync(x => x.Id == aircraftId && x.AirlineId == airlineId);
 
     public Task AddTransactionAsync(FuelTransaction transaction) => _context.FuelTransactions.AddAsync(transaction).AsTask();
 
-    public Task<FuelTransaction?> GetTransactionByIdAsync(int id) => _context.FuelTransactions.FirstOrDefaultAsync(x => x.Id == id);
+    public Task<FuelTransaction?> GetTrackedTransactionByIdAsync(int id) =>
+        _context.FuelTransactions.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
 
     public Task SaveChangesAsync() => _context.SaveChangesAsync();
 }

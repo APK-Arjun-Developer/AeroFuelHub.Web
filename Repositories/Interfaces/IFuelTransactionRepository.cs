@@ -13,6 +13,6 @@ public interface IFuelTransactionRepository
     Task<List<SelectListItem>> GetFuelCompaniesAsync();
     Task<bool> AircraftBelongsToAirlineAsync(int aircraftId, int airlineId);
     Task AddTransactionAsync(FuelTransaction transaction);
-    Task<FuelTransaction?> GetTransactionByIdAsync(int id);
+    Task<FuelTransaction?> GetTrackedTransactionByIdAsync(int id);
     Task SaveChangesAsync();
 }

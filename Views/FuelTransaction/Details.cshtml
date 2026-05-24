@@ -1,4 +1,4 @@
-@model AeroFuelHub.Web.Models.Entities.FuelTransaction
+@model AeroFuelHub.Web.ViewModels.FuelTransaction.FuelTransactionDetailsViewModel
 
 @{
     ViewData["Title"] = "Transaction Details";
@@ -8,84 +8,68 @@
 
     <div class="card-header">
 
-        <h3 class="card-title">
-            Fuel Transaction Details
-        </h3>
+        <h3 class="card-title">Fuel Transaction Details</h3>
 
         <div class="float-end">
-
-            <a asp-action="Invoice"
-               asp-route-id="@Model.Id"
-               class="btn btn-success">
-
-                Generate Invoice
-
-            </a>
-
+            <a asp-action="Invoice" asp-route-id="@Model.Id" class="btn btn-success">Generate Invoice</a>
         </div>
 
     </div>
 
     <div class="card-body">
 
-        <table class="table table-bordered">
-
-            <tr>
-                <th>Transaction Number</th>
-                <td>@Model.TransactionNumber</td>
-            </tr>
-
-            <tr>
-                <th>Airline</th>
-                <td>@Model.Airline?.Name</td>
-            </tr>
-
-            <tr>
-                <th>Aircraft</th>
-                <td>@Model.Aircraft?.Model</td>
-            </tr>
-
-            <tr>
-                <th>Airport</th>
-                <td>@Model.Airport?.Name</td>
-            </tr>
-
-            <tr>
-                <th>Fuel Company</th>
-                <td>@Model.FuelCompany?.Name</td>
-            </tr>
-
-            <tr>
-                <th>Flight Number</th>
-                <td>@Model.FlightNumber</td>
-            </tr>
-
-            <tr>
-                <th>Fuel Quantity</th>
-                <td>@Model.FuelQuantity</td>
-            </tr>
-
-            <tr>
-                <th>Price Per Liter</th>
-                <td>@Model.PricePerLiter</td>
-            </tr>
-
-            <tr>
-                <th>Total Amount</th>
-                <td>@Model.TotalAmount</td>
-            </tr>
-
-            <tr>
-                <th>Status</th>
-                <td>@Model.Status</td>
-            </tr>
-
-            <tr>
-                <th>Remarks</th>
-                <td>@Model.Remarks</td>
-            </tr>
-
-        </table>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <tr>
+                    <th>Transaction Number</th>
+                    <td>@Model.TransactionNumber</td>
+                </tr>
+                <tr>
+                    <th>Airline</th>
+                    <td>@Model.AirlineName</td>
+                </tr>
+                <tr>
+                    <th>Aircraft</th>
+                    <td>@Model.AircraftModel</td>
+                </tr>
+                <tr>
+                    <th>Airport</th>
+                    <td>@Model.AirportName</td>
+                </tr>
+                <tr>
+                    <th>Fuel Company</th>
+                    <td>@Model.FuelCompanyName</td>
+                </tr>
+                <tr>
+                    <th>Flight Number</th>
+                    <td>@Model.FlightNumber</td>
+                </tr>
+                <tr>
+                    <th>Fuel Quantity</th>
+                    <td>@Model.FuelQuantity.ToString("N2") L</td>
+                </tr>
+                <tr>
+                    <th>Price Per Liter</th>
+                    <td>₹ @Model.PricePerLiter.ToString("N2")</td>
+                </tr>
+                <tr>
+                    <th>Total Amount</th>
+                    <td>₹ @Model.TotalAmount.ToString("N2")</td>
+                </tr>
+                <tr>
+                    <th>Status</th>
+                    <td>@Model.Status</td>
+                </tr>
+                <tr>
+                    <th>Transaction Date</th>
+                    <td>@Model.TransactionDate.ToString("dd MMM yyyy HH:mm")</td>
+                </tr>
+                <tr>
+                    <th>Remarks</th>
+                    <td>@(string.IsNullOrWhiteSpace(Model.Remarks) ? "—" : Model.Remarks)</td>
+                </tr>
+            </table>
+        </div>
 
     </div>
 

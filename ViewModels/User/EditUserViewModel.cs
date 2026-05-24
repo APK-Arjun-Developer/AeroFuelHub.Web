@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using RoleNames = AeroFuelHub.Web.Constants.Roles;
 
 namespace AeroFuelHub.Web.ViewModels.User;
 
@@ -18,6 +19,7 @@ public class EditUserViewModel
 
     [Required]
     [Display(Name = "Role")]
+    [AllowedValues(RoleNames.Admin, RoleNames.AirlineExecutive, RoleNames.FuelSupplyExecutive, RoleNames.FuelCoordinator)]
     public string Role { get; set; } = string.Empty;
 
     [Display(Name = "Airline")]

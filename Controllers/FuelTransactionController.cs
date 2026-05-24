@@ -64,10 +64,10 @@ public class FuelTransactionController : Controller
         return RedirectToAction(nameof(History));
     }
 
-    public async Task<IActionResult> History(string? search)
+    public async Task<IActionResult> History(string? search, int page = 1)
     {
-        var transactions = await _fuelTransactionService.GetHistoryAsync(search, User);
-        return View(transactions);
+        var model = await _fuelTransactionService.GetHistoryAsync(search, page, User);
+        return View(model);
     }
 
     public async Task<IActionResult> Details(int id)

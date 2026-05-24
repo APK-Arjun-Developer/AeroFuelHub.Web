@@ -15,13 +15,18 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    public Task<List<ApplicationUser>> GetUsersAsync() => _context.Users.OrderByDescending(x => x.CreatedAt).ToListAsync();
+    public Task<List<ApplicationUser>> GetUsersAsync() =>
+        _context.Users.AsNoTracking().OrderByDescending(x => x.CreatedAt).ToListAsync();
 
-    public Task<List<SelectListItem>> GetRolesAsync() => _context.Roles.Select(x => new SelectListItem { Value = x.Name!, Text = x.Name! }).ToListAsync();
+    public Task<List<SelectListItem>> GetRolesAsync() =>
+        _context.Roles.AsNoTracking().Select(x => new SelectListItem { Value = x.Name!, Text = x.Name! }).ToListAsync();
 
-    public Task<List<SelectListItem>> GetAirlinesAsync() => _context.Airlines.Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).ToListAsync();
+    public Task<List<SelectListItem>> GetAirlinesAsync() =>
+        _context.Airlines.AsNoTracking().Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).ToListAsync();
 
-    public Task<List<SelectListItem>> GetFuelCompaniesAsync() => _context.FuelCompanies.Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).ToListAsync();
+    public Task<List<SelectListItem>> GetFuelCompaniesAsync() =>
+        _context.FuelCompanies.AsNoTracking().Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).ToListAsync();
 
-    public Task<List<SelectListItem>> GetAirportsAsync() => _context.Airports.Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).ToListAsync();
+    public Task<List<SelectListItem>> GetAirportsAsync() =>
+        _context.Airports.AsNoTracking().Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).ToListAsync();
 }
