@@ -33,7 +33,16 @@ builder.Services
     .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<IFuelTransactionRepository, FuelTransactionRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
+builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+
 builder.Services.AddScoped<IFuelTransactionService, FuelTransactionService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IProfileService, ProfileService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
