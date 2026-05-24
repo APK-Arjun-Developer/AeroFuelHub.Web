@@ -1,9 +1,9 @@
+using System.Security.Claims;
 using AeroFuelHub.Web.Models.Entities;
 using AeroFuelHub.Web.Repositories.Interfaces;
 using AeroFuelHub.Web.Services.Interfaces;
 using AeroFuelHub.Web.ViewModels.Profile;
 using Microsoft.AspNetCore.Identity;
-using System.Security.Claims;
 
 namespace AeroFuelHub.Web.Services.Implementations;
 

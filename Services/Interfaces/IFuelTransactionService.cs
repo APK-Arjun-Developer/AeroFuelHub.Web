@@ -1,6 +1,6 @@
+using System.Security.Claims;
 using AeroFuelHub.Web.Models.Entities;
 using AeroFuelHub.Web.ViewModels.FuelTransaction;
-using System.Security.Claims;
 
 namespace AeroFuelHub.Web.Services.Interfaces;
 

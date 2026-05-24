@@ -1,5 +1,5 @@
-using AeroFuelHub.Web.ViewModels.Profile;
 using System.Security.Claims;
+using AeroFuelHub.Web.ViewModels.Profile;
 
 namespace AeroFuelHub.Web.Services.Interfaces;
 

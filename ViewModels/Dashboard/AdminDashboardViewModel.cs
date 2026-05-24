@@ -18,6 +18,5 @@ public class AdminDashboardViewModel
 
     public List<int> ChartData { get; set; } = [];
 
-    public List<RecentTransactionViewModel>
-        RecentTransactions { get; set; } = [];
+    public List<RecentTransactionViewModel> RecentTransactions { get; set; } = [];
 }

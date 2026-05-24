@@ -1,14 +1,14 @@
 using AeroFuelHub.Web.Data;
-using AeroFuelHub.Web.Models.Entities;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using AeroFuelHub.Web.Data.Seeders;
+using AeroFuelHub.Web.Models.Entities;
+using AeroFuelHub.Web.Repositories.Implementations;
+using AeroFuelHub.Web.Repositories.Interfaces;
+using AeroFuelHub.Web.Services.Implementations;
+using AeroFuelHub.Web.Services.Interfaces;
 using AspNetCoreHero.ToastNotification;
 using AspNetCoreHero.ToastNotification.Extensions;
-using AeroFuelHub.Web.Repositories.Interfaces;
-using AeroFuelHub.Web.Repositories.Implementations;
-using AeroFuelHub.Web.Services.Interfaces;
-using AeroFuelHub.Web.Services.Implementations;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 

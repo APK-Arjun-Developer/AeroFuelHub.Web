@@ -1,9 +1,8 @@
-using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-using AeroFuelHub.Web.Models;
 using AeroFuelHub.Web.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AeroFuelHub.Web.Controllers;
+
 using Microsoft.AspNetCore.Authorization;
 
 [Authorize]

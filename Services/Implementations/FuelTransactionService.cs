@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using AeroFuelHub.Web.Constants;
 using AeroFuelHub.Web.Enums;
 using AeroFuelHub.Web.Models.Entities;
@@ -6,7 +7,6 @@ using AeroFuelHub.Web.Services.Interfaces;
 using AeroFuelHub.Web.ViewModels.FuelTransaction;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace AeroFuelHub.Web.Services.Implementations;
 
