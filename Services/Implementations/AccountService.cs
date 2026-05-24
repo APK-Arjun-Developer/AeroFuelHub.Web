@@ -4,6 +4,7 @@ using AeroFuelHub.Web.Services.Interfaces;
 using AeroFuelHub.Web.ViewModels.Account;
 using Microsoft.AspNetCore.Identity;
 using AeroFuelHub.Web.Models.Entities;
+using System.Security.Claims;
 
 namespace AeroFuelHub.Web.Services.Implementations;
 
@@ -27,12 +28,28 @@ public class AccountService : IAccountService
         if (!result.Succeeded) return (false, "Invalid email or password", "Login", "Account");
 
         var roles = await _accountRepository.GetRolesAsync(user);
-        if (roles.Contains(Roles.Admin)) return (true, null, "Admin", "Dashboard");
-        if (roles.Contains(Roles.AirlineExecutive)) return (true, null, "Airline", "Dashboard");
-        if (roles.Contains(Roles.FuelSupplyExecutive)) return (true, null, "FuelSupply", "Dashboard");
-        if (roles.Contains(Roles.FuelCoordinator)) return (true, null, "Coordinator", "Dashboard");
-        return (true, null, "Index", "Home");
+        var redirect = GetDashboardRedirectForRoles(roles);
+        return (true, null, redirect.Action, redirect.Controller);
+    }
+
+    public async Task<(string Action, string Controller)> GetDashboardRedirectAsync(ClaimsPrincipal user)
+    {
+        var appUser = await _accountRepository.FindByEmailAsync(user.Identity!.Name!);
+        if (appUser == null)
+            return ("Login", "Account");
+
+        var roles = await _accountRepository.GetRolesAsync(appUser);
+        return GetDashboardRedirectForRoles(roles);
     }
 
     public Task LogoutAsync() => _signInManager.SignOutAsync();
+
+    private static (string Action, string Controller) GetDashboardRedirectForRoles(IList<string> roles)
+    {
+        if (roles.Contains(Roles.Admin)) return ("Admin", "Dashboard");
+        if (roles.Contains(Roles.AirlineExecutive)) return ("Airline", "Dashboard");
+        if (roles.Contains(Roles.FuelSupplyExecutive)) return ("FuelSupply", "Dashboard");
+        if (roles.Contains(Roles.FuelCoordinator)) return ("Coordinator", "Dashboard");
+        return ("Login", "Account");
+    }
 }

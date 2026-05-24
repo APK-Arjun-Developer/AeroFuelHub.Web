@@ -11,6 +11,7 @@ public interface IFuelTransactionRepository
     Task<List<SelectListItem>> GetAirportsAsync();
     Task<List<SelectListItem>> GetAirportsByIdAsync(int airportId);
     Task<List<SelectListItem>> GetFuelCompaniesAsync();
+    Task<bool> AircraftBelongsToAirlineAsync(int aircraftId, int airlineId);
     Task AddTransactionAsync(FuelTransaction transaction);
     Task<FuelTransaction?> GetTransactionByIdAsync(int id);
     Task SaveChangesAsync();

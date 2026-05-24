@@ -47,6 +47,9 @@ public class FuelTransactionRepository : IFuelTransactionRepository
         .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name })
         .ToListAsync();
 
+    public Task<bool> AircraftBelongsToAirlineAsync(int aircraftId, int airlineId) =>
+        _context.Aircrafts.AnyAsync(x => x.Id == aircraftId && x.AirlineId == airlineId);
+
     public Task AddTransactionAsync(FuelTransaction transaction) => _context.FuelTransactions.AddAsync(transaction).AsTask();
 
     public Task<FuelTransaction?> GetTransactionByIdAsync(int id) => _context.FuelTransactions.FirstOrDefaultAsync(x => x.Id == id);

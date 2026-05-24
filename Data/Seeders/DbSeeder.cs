@@ -63,6 +63,10 @@ public static class DbSeeder
             context.FuelCompanies.FirstOrDefault(x =>
                 x.Name == "Shell Aviation");
 
+        var dubaiAirport =
+            context.Airports.FirstOrDefault(x =>
+                x.Code == "DXB");
+
         var demoUsers = new List<ApplicationUser>
     {
         new()
@@ -105,6 +109,8 @@ public static class DbSeeder
 
             EmailConfirmed = true,
 
+            AirportId = dubaiAirport?.Id,
+
             CreatedAt = DateTime.UtcNow
         }
     };
@@ -135,6 +141,18 @@ public static class DbSeeder
                 await userManager.AddToRoleAsync(
                     demoUsers[i],
                     roles[i]);
+            }
+        }
+
+        if (dubaiAirport != null)
+        {
+            var existingCoordinator =
+                await userManager.FindByEmailAsync("coordinator@aerofuelhub.com");
+
+            if (existingCoordinator != null && existingCoordinator.AirportId == null)
+            {
+                existingCoordinator.AirportId = dubaiAirport.Id;
+                await userManager.UpdateAsync(existingCoordinator);
             }
         }
     }

@@ -65,6 +65,7 @@ public class UserService : IUserService
             Role = roles.FirstOrDefault() ?? string.Empty,
             AirlineId = user.AirlineId,
             FuelCompanyId = user.FuelCompanyId,
+            AirportId = user.AirportId,
             Roles = await _userRepository.GetRolesAsync(),
             Airlines = await _userRepository.GetAirlinesAsync(),
             FuelCompanies = await _userRepository.GetFuelCompaniesAsync(),
@@ -85,6 +86,7 @@ public class UserService : IUserService
         user.UserName = model.Email;
         user.AirlineId = model.AirlineId;
         user.FuelCompanyId = model.FuelCompanyId;
+        user.AirportId = model.AirportId;
 
         var existingRoles = await _userManager.GetRolesAsync(user);
         await _userManager.RemoveFromRolesAsync(user, existingRoles);

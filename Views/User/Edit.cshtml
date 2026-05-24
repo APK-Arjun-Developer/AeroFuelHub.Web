@@ -79,6 +79,20 @@
 
                 </div>
 
+                <div class="col-md-6 mb-3" id="airportSection" style="display:none;">
+
+                    <label>Airport</label>
+
+                    <select asp-for="AirportId" asp-items="Model.Airports" class="form-select">
+
+                        <option value="">
+                            Select Airport
+                        </option>
+
+                    </select>
+
+                </div>
+
             </div>
 
         </div>
@@ -109,6 +123,8 @@
 
             $('#fuelCompanySection').hide();
 
+            $('#airportSection').hide();
+
             if (role === 'AirlineExecutive') {
 
                 $('#airlineSection').show();
@@ -117,6 +133,11 @@
             if (role === 'FuelSupplyExecutive') {
 
                 $('#fuelCompanySection').show();
+            }
+
+            if (role === 'FuelCoordinator') {
+
+                $('#airportSection').show();
             }
         }
 

@@ -46,6 +46,20 @@ public class FuelTransactionService : IFuelTransactionService
     {
         var currentUser = await _userManager.GetUserAsync(user);
 
+        if (user.IsInRole(Roles.AirlineExecutive))
+        {
+            if (currentUser?.AirlineId == null)
+                return (false, "", "Your account is not linked to an airline");
+            model.AirlineId = currentUser.AirlineId.Value;
+        }
+
+        if (user.IsInRole(Roles.FuelSupplyExecutive))
+        {
+            if (currentUser?.FuelCompanyId == null)
+                return (false, "", "Your account is not linked to a fuel company");
+            model.FuelCompanyId = currentUser.FuelCompanyId.Value;
+        }
+
         if (user.IsInRole(Roles.Admin) && !model.AirportId.HasValue)
             return (false, "AirportId", "Airport is required");
 
@@ -54,6 +68,9 @@ public class FuelTransactionService : IFuelTransactionService
 
         if (!model.AirportId.HasValue)
             return (false, "AirportId", "Airport is required");
+
+        if (!await _fuelTransactionRepository.AircraftBelongsToAirlineAsync(model.AircraftId, model.AirlineId))
+            return (false, "AircraftId", "Selected aircraft does not belong to the selected airline");
 
         var transaction = new FuelTransaction
         {
@@ -114,7 +131,8 @@ public class FuelTransactionService : IFuelTransactionService
 
     public async Task<bool> SoftDeleteAsync(int id, ClaimsPrincipal user)
     {
-        var transaction = await _fuelTransactionRepository.GetTransactionByIdAsync(id);
+        var transaction = await (await GetFilteredTransactionsQueryAsync(user))
+            .FirstOrDefaultAsync(x => x.Id == id);
         if (transaction == null)
             return false;
 
@@ -134,14 +152,26 @@ public class FuelTransactionService : IFuelTransactionService
 
         if (roles.Contains(Roles.Admin))
             return query;
-        if (roles.Contains(Roles.AirlineExecutive))
-            query = query.Where(x => x.AirlineId == currentUser!.AirlineId);
-        if (roles.Contains(Roles.FuelSupplyExecutive))
-            query = query.Where(x => x.FuelCompanyId == currentUser!.FuelCompanyId);
-        if (roles.Contains(Roles.FuelCoordinator))
-            query = query.Where(x => x.AirportId == currentUser!.AirportId);
 
-        return query;
+        var hasRoleFilter = false;
+
+        if (roles.Contains(Roles.AirlineExecutive))
+        {
+            query = query.Where(x => x.AirlineId == currentUser!.AirlineId);
+            hasRoleFilter = true;
+        }
+        if (roles.Contains(Roles.FuelSupplyExecutive))
+        {
+            query = query.Where(x => x.FuelCompanyId == currentUser!.FuelCompanyId);
+            hasRoleFilter = true;
+        }
+        if (roles.Contains(Roles.FuelCoordinator))
+        {
+            query = query.Where(x => x.AirportId == currentUser!.AirportId);
+            hasRoleFilter = true;
+        }
+
+        return hasRoleFilter ? query : query.Where(x => false);
     }
 
     private static string GenerateTransactionNumber()
