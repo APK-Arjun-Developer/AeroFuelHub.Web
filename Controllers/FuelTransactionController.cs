@@ -2,11 +2,8 @@ using AeroFuelHub.Web.Constants;
 using AeroFuelHub.Web.Services.Interfaces;
 using AeroFuelHub.Web.ViewModels.FuelTransaction;
 using AspNetCoreHero.ToastNotification.Abstractions;
-using ClosedXML.Excel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using QuestPDF.Fluent;
-using QuestPDF.Infrastructure;
 
 namespace AeroFuelHub.Web.Controllers;
 
@@ -14,11 +11,19 @@ namespace AeroFuelHub.Web.Controllers;
 public class FuelTransactionController : Controller
 {
     private readonly IFuelTransactionService _fuelTransactionService;
+    private readonly IReportService _reportService;
+    private readonly IExportService _exportService;
     private readonly INotyfService _notyf;
 
-    public FuelTransactionController(IFuelTransactionService fuelTransactionService, INotyfService notyf)
+    public FuelTransactionController(
+        IFuelTransactionService fuelTransactionService,
+        IReportService reportService,
+        IExportService exportService,
+        INotyfService notyf)
     {
         _fuelTransactionService = fuelTransactionService;
+        _reportService = reportService;
+        _exportService = exportService;
         _notyf = notyf;
     }
 
@@ -74,34 +79,10 @@ public class FuelTransactionController : Controller
 
     public async Task<IActionResult> Invoice(int id)
     {
-        QuestPDF.Settings.License = LicenseType.Community;
         var transaction = await _fuelTransactionService.GetInvoiceDataAsync(id, User);
         if (transaction == null) return NotFound();
 
-        var pdf = Document.Create(container =>
-        {
-            container.Page(page =>
-            {
-                page.Margin(30);
-                page.Header().Text("Fuel Transaction Invoice").FontSize(24).Bold();
-                page.Content().Column(col =>
-                {
-                    col.Spacing(10);
-                    col.Item().Text($"Transaction No: {transaction.TransactionNumber}");
-                    col.Item().Text($"Airline: {transaction.Airline?.Name}");
-                    col.Item().Text($"Aircraft: {transaction.Aircraft?.Model}");
-                    col.Item().Text($"Airport: {transaction.Airport?.Name}");
-                    col.Item().Text($"Fuel Company: {transaction.FuelCompany?.Name}");
-                    col.Item().Text($"Flight Number: {transaction.FlightNumber}");
-                    col.Item().Text($"Fuel Quantity: {transaction.FuelQuantity}");
-                    col.Item().Text($"Price Per Liter: {transaction.PricePerLiter}");
-                    col.Item().Text($"Total Amount: {transaction.TotalAmount}");
-                    col.Item().Text($"Transaction Date: {transaction.TransactionDate}");
-                });
-                page.Footer().AlignCenter().Text("AeroFuel Hub");
-            });
-        }).GeneratePdf();
-
+        var pdf = _reportService.GenerateInvoicePdf(transaction);
         return File(pdf, "application/pdf", $"Invoice-{transaction.TransactionNumber}.pdf");
     }
 
@@ -111,31 +92,11 @@ public class FuelTransactionController : Controller
         return View(data);
     }
 
-    public async Task<IActionResult> ExportExcel()
+    public async Task<IActionResult> ExportExcel(DateTime? startDate, DateTime? endDate)
     {
-        var transactions = await _fuelTransactionService.GetExcelExportDataAsync(User);
-        using var workbook = new XLWorkbook();
-        var worksheet = workbook.Worksheets.Add("Transactions");
-        worksheet.Cell(1, 1).Value = "Transaction Number";
-        worksheet.Cell(1, 2).Value = "Airline";
-        worksheet.Cell(1, 3).Value = "Airport";
-        worksheet.Cell(1, 4).Value = "Fuel Company";
-        worksheet.Cell(1, 5).Value = "Total Amount";
-
-        int row = 2;
-        foreach (var item in transactions)
-        {
-            worksheet.Cell(row, 1).Value = item.TransactionNumber;
-            worksheet.Cell(row, 2).Value = item.Airline?.Name;
-            worksheet.Cell(row, 3).Value = item.Airport?.Name;
-            worksheet.Cell(row, 4).Value = item.FuelCompany?.Name;
-            worksheet.Cell(row, 5).Value = item.TotalAmount;
-            row++;
-        }
-
-        using var stream = new MemoryStream();
-        workbook.SaveAs(stream);
-        return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "FuelTransactions.xlsx");
+        var transactions = await _fuelTransactionService.GetExcelExportDataAsync(startDate, endDate, User);
+        var excel = _exportService.GenerateTransactionsExcel(transactions);
+        return File(excel, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "FuelTransactions.xlsx");
     }
 
     [HttpPost]

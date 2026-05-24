@@ -12,7 +12,7 @@ public interface IFuelTransactionService
     Task<FuelTransaction?> GetDetailsAsync(int id, ClaimsPrincipal user);
     Task<FuelTransaction?> GetInvoiceDataAsync(int id, ClaimsPrincipal user);
     Task<List<FuelTransaction>> GetReportsAsync(DateTime? startDate, DateTime? endDate, ClaimsPrincipal user);
-    Task<List<FuelTransaction>> GetExcelExportDataAsync(ClaimsPrincipal user);
+    Task<List<FuelTransaction>> GetExcelExportDataAsync(DateTime? startDate, DateTime? endDate, ClaimsPrincipal user);
     Task<List<FuelTransaction>> GetDashboardTransactionsAsync(ClaimsPrincipal user, int take);
     Task<bool> SoftDeleteAsync(int id, ClaimsPrincipal user);
 }

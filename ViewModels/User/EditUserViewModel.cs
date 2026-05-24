@@ -8,18 +8,26 @@ public class EditUserViewModel
     public string Id { get; set; } = string.Empty;
 
     [Required]
+    [Display(Name = "Full Name")]
     public string FullName { get; set; } = string.Empty;
 
     [Required]
     [EmailAddress]
+    [Display(Name = "Email")]
     public string Email { get; set; } = string.Empty;
 
     [Required]
+    [Display(Name = "Role")]
     public string Role { get; set; } = string.Empty;
 
+    [Display(Name = "Airline")]
     public int? AirlineId { get; set; }
 
+    [Display(Name = "Fuel Company")]
     public int? FuelCompanyId { get; set; }
+
+    [Display(Name = "Airport")]
+    public int? AirportId { get; set; }
 
     public List<SelectListItem> Roles { get; set; } = [];
 
@@ -27,10 +35,5 @@ public class EditUserViewModel
 
     public List<SelectListItem> FuelCompanies { get; set; } = [];
 
-    public int? AirportId { get; set; }
-
-    public IEnumerable<SelectListItem>
-        Airports
-    { get; set; }
-        = new List<SelectListItem>();
+    public IEnumerable<SelectListItem> Airports { get; set; } = [];
 }

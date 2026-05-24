@@ -34,6 +34,8 @@
 
     <div class="card-body">
 
+        <div class="table-responsive">
+
         <table id="transactionTable" class="table table-bordered table-striped">
 
             <thead>
@@ -80,7 +82,7 @@
 
                         <td>@item.FlightNumber</td>
 
-                        <td>@item.TotalAmount</td>
+                        <td>₹ @item.TotalAmount.ToString("N2")</td>
 
                         <td>
                             @item.TransactionDate
@@ -113,6 +115,8 @@
             </tbody>
 
         </table>
+
+        </div>
 
     </div>
 

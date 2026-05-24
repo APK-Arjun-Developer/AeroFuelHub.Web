@@ -34,7 +34,7 @@
 
             <div class="inner">
 
-                <h3>@Model.TotalRevenue</h3>
+                <h3>₹ @Model.TotalRevenue.ToString("N2")</h3>
 
                 <p>Total Revenue</p>
 
@@ -155,7 +155,7 @@
 
                             <br />
 
-                            ₹ @item.TotalAmount
+                            ₹ @item.TotalAmount.ToString("N2")
 
                         </li>
                     }

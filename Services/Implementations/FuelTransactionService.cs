@@ -120,8 +120,8 @@ public class FuelTransactionService : IFuelTransactionService
         return await query.OrderByDescending(x => x.TransactionDate).ToListAsync();
     }
 
-    public async Task<List<FuelTransaction>> GetExcelExportDataAsync(ClaimsPrincipal user)
-        => await (await GetFilteredTransactionsQueryAsync(user)).ToListAsync();
+    public Task<List<FuelTransaction>> GetExcelExportDataAsync(DateTime? startDate, DateTime? endDate, ClaimsPrincipal user)
+        => GetReportsAsync(startDate, endDate, user);
 
     public async Task<List<FuelTransaction>> GetDashboardTransactionsAsync(ClaimsPrincipal user, int take)
         => await (await GetFilteredTransactionsQueryAsync(user))
