@@ -12,6 +12,10 @@ Thumbs.db
 # Build output
 [Bb]in/
 [Oo]bj/
+[Pp]ublish/
 
-# Production configuration file
+# Production configuration
 appsettings.Production.json
+
+# Visual Studio publish profile (machine-specific)
+*.pubxml.user
