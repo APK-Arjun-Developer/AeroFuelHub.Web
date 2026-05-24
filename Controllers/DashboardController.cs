@@ -1,4 +1,5 @@
 using AeroFuelHub.Web.Constants;
+using AeroFuelHub.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,27 +8,37 @@ namespace AeroFuelHub.Web.Controllers;
 [Authorize]
 public class DashboardController : Controller
 {
-    [Authorize(Roles = Roles.Admin)]
-    public IActionResult Admin()
+    private readonly IDashboardService _dashboardService;
+
+    public DashboardController(IDashboardService dashboardService)
     {
-        return View();
+        _dashboardService = dashboardService;
     }
 
+    [Authorize(Roles = Roles.Admin)]
+    public async Task<IActionResult> Admin() => View(await _dashboardService.GetAdminDashboardAsync());
+
     [Authorize(Roles = Roles.AirlineExecutive)]
-    public IActionResult Airline()
+    public async Task<IActionResult> Airline()
     {
-        return View();
+        var model = await _dashboardService.GetAirlineDashboardAsync(User);
+        if (model == null) return NotFound();
+        return View("RoleDashboard", model);
     }
 
     [Authorize(Roles = Roles.FuelSupplyExecutive)]
-    public IActionResult FuelSupply()
+    public async Task<IActionResult> FuelSupply()
     {
-        return View();
+        var model = await _dashboardService.GetFuelSupplyDashboardAsync(User);
+        if (model == null) return NotFound();
+        return View("RoleDashboard", model);
     }
 
     [Authorize(Roles = Roles.FuelCoordinator)]
-    public IActionResult Coordinator()
+    public async Task<IActionResult> Coordinator()
     {
-        return View();
+        var model = await _dashboardService.GetCoordinatorDashboardAsync(User);
+        if (model == null) return NotFound();
+        return View("RoleDashboard", model);
     }
 }

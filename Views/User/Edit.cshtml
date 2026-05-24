@@ -1,0 +1,165 @@
+@model AeroFuelHub.Web.ViewModels.User.EditUserViewModel
+
+@{
+    ViewData["Title"] = "Edit User";
+}
+
+<div class="card">
+
+    <div class="card-header">
+
+        <h3 class="card-title">
+            Edit User
+        </h3>
+
+    </div>
+
+    <form asp-action="Edit" method="post">
+
+        <input type="hidden" asp-for="Id" />
+
+        <div class="card-body">
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <label asp-for="FullName"></label>
+
+                    <input asp-for="FullName" class="form-control" />
+
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label asp-for="Email"></label>
+
+                    <input asp-for="Email" class="form-control" />
+
+                    <span asp-validation-for="Email" class="text-danger"></span>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label asp-for="Role"></label>
+
+                    <select asp-for="Role" asp-items="Model.Roles" id="roleSelect" class="form-select">
+
+                    </select>
+
+                    <span asp-validation-for="Role" class="text-danger"></span>
+
+                </div>
+
+                <div class="col-md-6 mb-3" id="airlineSection" style="display:none;">
+
+                    <label asp-for="AirlineId"></label>
+
+                    <select asp-for="AirlineId" asp-items="Model.Airlines" class="form-select">
+
+                        <option value="">
+                            Select Airline
+                        </option>
+
+                    </select>
+
+                    <span asp-validation-for="AirlineId" class="text-danger"></span>
+
+                </div>
+
+                <div class="col-md-6 mb-3" id="fuelCompanySection" style="display:none;">
+
+                    <label asp-for="FuelCompanyId"></label>
+
+                    <select asp-for="FuelCompanyId" asp-items="Model.FuelCompanies" class="form-select">
+
+                        <option value="">
+                            Select Fuel Company
+                        </option>
+
+                    </select>
+
+                    <span asp-validation-for="FuelCompanyId" class="text-danger"></span>
+
+                </div>
+
+                <div class="col-md-6 mb-3" id="airportSection" style="display:none;">
+
+                    <label asp-for="AirportId"></label>
+
+                    <select asp-for="AirportId" asp-items="Model.Airports" class="form-select">
+
+                        <option value="">
+                            Select Airport
+                        </option>
+
+                    </select>
+
+                    <span asp-validation-for="AirportId" class="text-danger"></span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="card-footer">
+
+            <button type="submit" class="btn btn-primary">
+
+                Update User
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+
+        function toggleSections() {
+
+            let role = $('#roleSelect').val();
+
+            $('#airlineSection').hide();
+
+            $('#fuelCompanySection').hide();
+
+            $('#airportSection').hide();
+
+            if (role === 'AirlineExecutive') {
+
+                $('#airlineSection').show();
+            }
+
+            if (role === 'FuelSupplyExecutive') {
+
+                $('#fuelCompanySection').show();
+            }
+
+            if (role === 'FuelCoordinator') {
+
+                $('#airportSection').show();
+            }
+        }
+
+        $('#roleSelect').change(toggleSections);
+
+        toggleSections();
+
+    </script>
+
+}

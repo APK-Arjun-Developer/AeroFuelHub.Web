@@ -1,22 +1,55 @@
 using AeroFuelHub.Web.Data;
+using AeroFuelHub.Web.Data.Seeders;
 using AeroFuelHub.Web.Models.Entities;
+using AeroFuelHub.Web.Repositories.Implementations;
+using AeroFuelHub.Web.Repositories.Interfaces;
+using AeroFuelHub.Web.Services.Implementations;
+using AeroFuelHub.Web.Services.Interfaces;
+using AspNetCoreHero.ToastNotification;
+using AspNetCoreHero.ToastNotification.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using AeroFuelHub.Web.Data.Seeders;
-using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException("Connection string 'DefaultConnection' is not configured");
+}
+
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddNotyf(config =>
+{
+    config.DurationInSeconds = 3;
+
+    config.IsDismissable = true;
+
+    config.Position = NotyfPosition.TopRight;
+});
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(connectionString));
 
 builder.Services
     .AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
+
+builder.Services.AddScoped<IFuelTransactionRepository, FuelTransactionRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
+builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+
+builder.Services.AddScoped<IFuelTransactionService, FuelTransactionService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IProfileService, ProfileService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<IExportService, ExportService>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -42,6 +75,8 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
+app.UseNotyf();
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
@@ -59,11 +94,15 @@ using (var scope = app.Services.CreateScope())
     var context =
         services.GetRequiredService<ApplicationDbContext>();
 
+    await context.Database.MigrateAsync();
+
     await DbSeeder.SeedRolesAsync(roleManager);
 
     await DbSeeder.SeedAdminUserAsync(userManager);
 
     await MasterDataSeeder.SeedAsync(context);
+
+    await DbSeeder.SeedDemoUsersAsync(userManager, context);
 }
 
 app.Run();

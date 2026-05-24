@@ -1,0 +1,164 @@
+@model AeroFuelHub.Web.ViewModels.Dashboard.RoleDashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<h2 class="mb-4">
+    @Model.Title
+</h2>
+
+<div class="row">
+
+    <div class="col-lg-4 col-6">
+
+        <div class="small-box bg-info">
+
+            <div class="inner">
+
+                <h3>@Model.TotalTransactions</h3>
+
+                <p>Total Transactions</p>
+
+            </div>
+
+            <div class="icon">
+
+                <i class="fas fa-gas-pump"></i>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-4 col-6">
+
+        <div class="small-box bg-success">
+
+            <div class="inner">
+
+                <h3>
+                    ₹ @Model.TotalRevenue.ToString("N2")
+                </h3>
+
+                <p>Total Revenue</p>
+
+            </div>
+
+            <div class="icon">
+
+                <i class="fas fa-dollar-sign"></i>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-4 col-6">
+
+        <div class="small-box bg-warning">
+
+            <div class="inner">
+
+                <h3>
+                    @Model.TotalFuelQuantity
+                </h3>
+
+                <p>Total Fuel Quantity</p>
+
+            </div>
+
+            <div class="icon">
+
+                <i class="fas fa-oil-can"></i>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="card">
+
+    <div class="card-header">
+
+        <h3 class="card-title">
+
+            Recent Transactions
+
+        </h3>
+
+    </div>
+
+    <div class="card-body p-0">
+
+        <div class="table-responsive">
+
+        <table class="table table-bordered">
+
+            <thead>
+
+                <tr>
+
+                    <th>Transaction</th>
+                    <th>Airline</th>
+                    <th>Total Amount</th>
+                    <th>Date</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @if (Model.RecentTransactions.Any())
+                {
+                    @foreach (var item in Model.RecentTransactions)
+                    {
+                        <tr>
+
+                            <td>
+                                @item.TransactionNumber
+                            </td>
+
+                            <td>
+                                @item.Airline
+                            </td>
+
+                            <td>
+                                ₹ @item.TotalAmount.ToString("N2")
+                            </td>
+
+                            <td>
+                                @item.TransactionDate
+                            </td>
+
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+
+                        <td colspan="4" class="text-center">
+
+                            No transactions found
+
+                        </td>
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+        </div>
+
+    </div>
+
+</div>

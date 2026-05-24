@@ -1,0 +1,111 @@
+@using Microsoft.AspNetCore.Identity
+
+@model IEnumerable<AeroFuelHub.Web.Models.Entities.ApplicationUser>
+
+@inject UserManager<AeroFuelHub.Web.Models.Entities.ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Users";
+}
+
+<div class="card">
+
+    <div class="card-header">
+
+        <a asp-action="Create" class="btn btn-primary">
+
+            Create User
+
+        </a>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="table-responsive">
+
+        <table id="userTable" class="table table-bordered table-striped">
+
+            <thead>
+
+                <tr>
+
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Created At</th>
+                    <th>Action</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @foreach (var item in Model)
+                {
+                    var roles =
+                    await UserManager.GetRolesAsync(item);
+
+                    <tr>
+
+                        <td>@item.FullName</td>
+
+                        <td>@item.Email</td>
+
+                        <td>
+                            @string.Join(", ", roles)
+                        </td>
+
+                        <td>@item.CreatedAt</td>
+
+                        <td>
+
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">
+
+                                Edit
+
+                            </a>
+
+                            <form asp-action="Delete" method="post" class="d-inline">
+
+                                <input type="hidden" name="id" value="@item.Id" />
+
+                                <button class="btn btn-danger btn-sm" onclick="return confirm('Delete user?')">
+
+                                    Delete
+
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css" />
+
+    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+
+    <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+
+    <script>
+
+        $('#userTable').DataTable();
+
+    </script>
+
+}

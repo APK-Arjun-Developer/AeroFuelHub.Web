@@ -163,6 +163,9 @@ namespace AeroFuelHub.Web.Migrations
                     b.Property<int?>("AirlineId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("AirportId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -218,6 +221,12 @@ namespace AeroFuelHub.Web.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AirlineId");
+
+                    b.HasIndex("AirportId");
+
+                    b.HasIndex("FuelCompanyId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -491,6 +500,27 @@ namespace AeroFuelHub.Web.Migrations
                         .IsRequired();
 
                     b.Navigation("Airline");
+                });
+
+            modelBuilder.Entity("AeroFuelHub.Web.Models.Entities.ApplicationUser", b =>
+                {
+                    b.HasOne("AeroFuelHub.Web.Models.Entities.Airline", "Airline")
+                        .WithMany()
+                        .HasForeignKey("AirlineId");
+
+                    b.HasOne("AeroFuelHub.Web.Models.Entities.Airport", "Airport")
+                        .WithMany()
+                        .HasForeignKey("AirportId");
+
+                    b.HasOne("AeroFuelHub.Web.Models.Entities.FuelCompany", "FuelCompany")
+                        .WithMany()
+                        .HasForeignKey("FuelCompanyId");
+
+                    b.Navigation("Airline");
+
+                    b.Navigation("Airport");
+
+                    b.Navigation("FuelCompany");
                 });
 
             modelBuilder.Entity("AeroFuelHub.Web.Models.Entities.FuelTransaction", b =>

@@ -1,0 +1,106 @@
+@model AeroFuelHub.Web.ViewModels.Profile.ProfileViewModel
+
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="card">
+
+    <div class="card-header">
+
+        <h3 class="card-title">
+            My Profile
+        </h3>
+
+    </div>
+
+    <form asp-controller="Profile" asp-action="Index" method="post">
+
+        <div class="card-body">
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <label asp-for="FullName"></label>
+
+                    <input asp-for="FullName" class="form-control" />
+
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label asp-for="Email"></label>
+
+                    <input asp-for="Email" class="form-control" />
+
+                    <span asp-validation-for="Email" class="text-danger"></span>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label asp-for="Role"></label>
+
+                    <input value="@Model.Role" class="form-control" readonly tabindex="-1" />
+
+                </div>
+
+                @if (Model.Role == "AirlineExecutive")
+                {
+                    <div class="col-md-6 mb-3">
+
+                        <label asp-for="Airline"></label>
+
+                        <input value="@Model.Airline" class="form-control" readonly tabindex="-1" />
+
+                    </div>
+                }
+
+                @if (Model.Role == "FuelSupplyExecutive")
+                {
+                    <div class="col-md-6 mb-3">
+
+                        <label asp-for="FuelCompany"></label>
+
+                        <input value="@Model.FuelCompany" class="form-control" readonly tabindex="-1" />
+
+                    </div>
+                }
+
+                @if (Model.Role == "FuelCoordinator")
+                {
+                    <div class="col-md-6 mb-3">
+
+                        <label asp-for="Airport"></label>
+
+                        <input value="@Model.Airport" class="form-control" readonly tabindex="-1" />
+
+                    </div>
+                }
+
+            </div>
+
+        </div>
+
+        <div class="card-footer">
+
+            <button type="submit" class="btn btn-primary">
+
+                Update Profile
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

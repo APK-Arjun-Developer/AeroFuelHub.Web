@@ -5,6 +5,13 @@ Thumbs.db
 # Editor
 .vscode/
 .idea/
+.vs/
 
 # Logs
 *.log
+# Build output
+[Bb]in/
+[Oo]bj/
+
+# Production configuration file
+appsettings.Production.json

@@ -3,26 +3,19 @@
 
 <head>
     <meta charset="utf-8" />
-
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-
     <title>@ViewData["Title"] - AeroFuel Hub</title>
 
-    <!-- Bootstrap -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
-
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-
-    <!-- AdminLTE -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 
-<body class="hold-transition sidebar-mini">
+<body id="bodyElement" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
 
     <div class="wrapper">
 
-        <!-- Navbar -->
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
 
             <ul class="navbar-nav">
@@ -38,14 +31,23 @@
                 @if (User.Identity!.IsAuthenticated)
                 {
                     <li class="nav-item">
-                        <span class="nav-link">
-                            @User.Identity.Name
-                        </span>
+                        <div class="dropdown">
+                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
+                                @User.Identity!.Name
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end">
+                                <a class="dropdown-item" asp-controller="Profile" asp-action="Index">My Profile</a>
+                                <a class="dropdown-item" asp-controller="Profile" asp-action="ChangePassword">Change Password</a>
+                                <div class="dropdown-divider"></div>
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="px-0">
+                                    <button type="submit" class="dropdown-item">Logout</button>
+                                </form>
+                            </div>
+                        </div>
                     </li>
-
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Account" asp-action="Logout">
-                            Logout
+                        <a class="nav-link" href="#" id="darkModeToggle" title="Switch to dark mode" aria-label="Switch to dark mode">
+                            <i class="fas fa-moon" id="darkModeIcon"></i>
                         </a>
                     </li>
                 }
@@ -54,149 +56,73 @@
 
         </nav>
 
-        <!-- Sidebar -->
-        <aside class="main-sidebar sidebar-dark-primary elevation-4">
+        @await Html.PartialAsync("_Sidebar")
 
-            <a href="#" class="brand-link text-center">
-
-                <span class="brand-text font-weight-light">
-                    AeroFuel Hub
-                </span>
-            </a>
-
-            <div class="sidebar">
-
-                <nav class="mt-2">
-
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
-
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <li class="nav-item">
-                                <a asp-controller="Dashboard" asp-action="Admin" class="nav-link">
-
-                                    <i class="nav-icon fas fa-chart-line"></i>
-
-                                    <p>Dashboard</p>
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-
-                                    <i class="nav-icon fas fa-users"></i>
-
-                                    <p>Users</p>
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a asp-controller="FuelTransaction" asp-action="History" class="nav-link">
-
-                                    <i class="nav-icon fas fa-gas-pump"></i>
-
-                                    <p>Fuel Transactions</p>
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a asp-controller="FuelTransaction" asp-action="Reports" class="nav-link">
-
-                                    <i class="nav-icon fas fa-chart-bar"></i>
-
-                                    <p>Reports</p>
-                                </a>
-                            </li>
-                        }
-
-                        @if (User.IsInRole("FuelCoordinator"))
-                        {
-                            <li class="nav-item">
-                                <a asp-controller="Dashboard" asp-action="Coordinator" class="nav-link">
-
-                                    <i class="nav-icon fas fa-chart-pie"></i>
-
-                                    <p>Dashboard</p>
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a asp-controller="FuelTransaction" asp-action="Create" class="nav-link">
-
-                                    <i class="nav-icon fas fa-plus-circle"></i>
-
-                                    <p>Create Fuel Entry</p>
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a asp-controller="FuelTransaction" asp-action="History" class="nav-link">
-
-                                    <i class="nav-icon fas fa-history"></i>
-
-                                    <p>Transaction History</p>
-                                </a>
-                            </li>
-                        }
-
-                    </ul>
-
-                </nav>
-
-            </div>
-
-        </aside>
-
-        <!-- Content Wrapper -->
         <div class="content-wrapper">
 
             <section class="content-header">
-
                 <div class="container-fluid">
-
                     <div class="row mb-2">
-
                         <div class="col-sm-6">
                             <h1>@ViewData["Title"]</h1>
                         </div>
-
                     </div>
-
                 </div>
-
             </section>
 
             <section class="content">
-
                 <div class="container-fluid">
-
                     @RenderBody()
-
                 </div>
-
             </section>
 
         </div>
 
-        <!-- Footer -->
         <footer class="main-footer">
-
-            <strong>
-                AeroFuel Hub
-            </strong>
-
+            <strong>AeroFuel Hub</strong>
         </footer>
 
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <script>
+        const body = document.getElementById('bodyElement');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const darkModeIcon = document.getElementById('darkModeIcon');
+
+        function updateDarkModeIcon() {
+            if (!darkModeIcon || !darkModeToggle) return;
+
+            const isDark = body.classList.contains('dark-mode');
+            darkModeIcon.classList.remove('fa-moon', 'fa-sun');
+            darkModeIcon.classList.add(isDark ? 'fa-sun' : 'fa-moon');
+
+            const label = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+            darkModeToggle.setAttribute('title', label);
+            darkModeToggle.setAttribute('aria-label', label);
+        }
+
+        if (localStorage.getItem('dark-mode') === 'enabled') {
+            body.classList.add('dark-mode');
+        }
+        updateDarkModeIcon();
+
+        if (darkModeToggle) {
+            darkModeToggle.addEventListener('click', function (e) {
+                e.preventDefault();
+                body.classList.toggle('dark-mode');
+                localStorage.setItem('dark-mode', body.classList.contains('dark-mode') ? 'enabled' : 'disabled');
+                updateDarkModeIcon();
+                body.dispatchEvent(new CustomEvent('themechange'));
+            });
+        }
+    </script>
+
+    @await Component.InvokeAsync("Notyf")
     @await RenderSectionAsync("Scripts", required: false)
 
 </body>

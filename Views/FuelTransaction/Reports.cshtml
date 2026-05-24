@@ -2,92 +2,61 @@
 
 @{
     ViewData["Title"] = "Reports";
+    var startDate = Context.Request.Query["startDate"].ToString();
+    var endDate = Context.Request.Query["endDate"].ToString();
 }
 
 <div class="card">
-
     <div class="card-header">
-
         <form method="get">
-
             <div class="row">
-
                 <div class="col-md-3">
-
-                    <input type="date"
-                           name="startDate"
-                           class="form-control" />
-
+                    <input type="date" name="startDate" value="@startDate" class="form-control" />
                 </div>
-
                 <div class="col-md-3">
-
-                    <input type="date"
-                           name="endDate"
-                           class="form-control" />
-
+                    <input type="date" name="endDate" value="@endDate" class="form-control" />
                 </div>
-
                 <div class="col-md-2">
-
-                    <button class="btn btn-primary">
-
-                        Filter
-
-                    </button>
-
+                    <button class="btn btn-primary">Filter</button>
                 </div>
-
             </div>
-
         </form>
-
     </div>
 
     <div class="card-body">
+        <a asp-action="ExportExcel"
+           asp-route-startDate="@startDate"
+           asp-route-endDate="@endDate"
+           class="btn btn-success mb-3">
+            Export Excel
+        </a>
 
-        <table class="table table-bordered">
-
-            <thead>
-
-                <tr>
-
-                    <th>Transaction</th>
-                    <th>Airline</th>
-                    <th>Airport</th>
-                    <th>Fuel Company</th>
-                    <th>Total Amount</th>
-                    <th>Date</th>
-
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-                @foreach (var item in Model)
-                {
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
                     <tr>
-
-                        <td>@item.TransactionNumber</td>
-
-                        <td>@item.Airline?.Name</td>
-
-                        <td>@item.Airport?.Name</td>
-
-                        <td>@item.FuelCompany?.Name</td>
-
-                        <td>@item.TotalAmount</td>
-
-                        <td>@item.TransactionDate</td>
-
+                        <th>Transaction</th>
+                        <th>Airline</th>
+                        <th>Airport</th>
+                        <th>Fuel Company</th>
+                        <th>Total Amount</th>
+                        <th>Date</th>
                     </tr>
-                }
-
-            </tbody>
-
-        </table>
-
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.TransactionNumber</td>
+                            <td>@item.Airline?.Name</td>
+                            <td>@item.Airport?.Name</td>
+                            <td>@item.FuelCompany?.Name</td>
+                            <td>₹ @item.TotalAmount.ToString("N2")</td>
+                            <td>@item.TransactionDate.ToString("dd MMM yyyy")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
-
 </div>
