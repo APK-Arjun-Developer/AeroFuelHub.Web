@@ -1,0 +1,193 @@
+// AeroFuel Hub — database schema for https://dbdiagram.io
+// Import: dbdiagram.io → Import → paste this file or upload aerofuelhub.dbml
+
+Project AeroFuelHub {
+  database_type: 'SQL Server'
+  Note: '''
+    ASP.NET Core MVC + EF Core + Identity
+    Soft delete on domain tables (IsDeleted, DeletedAt, DeletedBy)
+    FuelTransactionStatus: 1=Draft, 2=Completed, 3=Cancelled
+  '''
+}
+
+// ─── Master data ─────────────────────────────────────────────
+
+Table Airlines {
+  Id int [pk, increment]
+  Name nvarchar(200) [not null]
+  CreatedAt datetime2 [not null]
+  CreatedBy nvarchar [null]
+  UpdatedAt datetime2 [null]
+  UpdatedBy nvarchar [null]
+  IsDeleted bit [not null, default: 0]
+  DeletedAt datetime2 [null]
+  DeletedBy nvarchar [null]
+
+  Note: 'Airline master data'
+}
+
+Table Aircrafts {
+  Id int [pk, increment]
+  Model nvarchar(200) [not null]
+  AircraftCode nvarchar [not null]
+  AirlineId int [not null, ref: > Airlines.Id]
+  CreatedAt datetime2 [not null]
+  CreatedBy nvarchar [null]
+  UpdatedAt datetime2 [null]
+  UpdatedBy nvarchar [null]
+  IsDeleted bit [not null, default: 0]
+  DeletedAt datetime2 [null]
+  DeletedBy nvarchar [null]
+
+  Note: 'Aircraft belongs to one airline'
+}
+
+Table Airports {
+  Id int [pk, increment]
+  Name nvarchar(200) [not null]
+  Code nvarchar [not null]
+  CreatedAt datetime2 [not null]
+  CreatedBy nvarchar [null]
+  UpdatedAt datetime2 [null]
+  UpdatedBy nvarchar [null]
+  IsDeleted bit [not null, default: 0]
+  DeletedAt datetime2 [null]
+  DeletedBy nvarchar [null]
+
+  Note: 'Airport master data (IATA-style code)'
+}
+
+Table FuelCompanies {
+  Id int [pk, increment]
+  Name nvarchar(200) [not null]
+  CreatedAt datetime2 [not null]
+  CreatedBy nvarchar [null]
+  UpdatedAt datetime2 [null]
+  UpdatedBy nvarchar [null]
+  IsDeleted bit [not null, default: 0]
+  DeletedAt datetime2 [null]
+  DeletedBy nvarchar [null]
+
+  Note: 'Fuel supplier companies'
+}
+
+// ─── Core business ───────────────────────────────────────────
+
+Table FuelTransactions {
+  Id int [pk, increment]
+  TransactionNumber nvarchar [not null]
+  TransactionDate datetime2 [not null]
+  AirlineId int [not null, ref: > Airlines.Id]
+  AircraftId int [not null, ref: > Aircrafts.Id]
+  AirportId int [not null, ref: > Airports.Id]
+  FuelCompanyId int [not null, ref: > FuelCompanies.Id]
+  FlightNumber nvarchar [not null]
+  FuelQuantity decimal(18,2) [not null]
+  PricePerLiter decimal(18,2) [not null]
+  TotalAmount decimal(18,2) [not null]
+  Remarks nvarchar [null]
+  Status int [not null, note: '1=Draft, 2=Completed, 3=Cancelled']
+  CreatedAt datetime2 [not null]
+  CreatedBy nvarchar [null]
+  UpdatedAt datetime2 [null]
+  UpdatedBy nvarchar [null]
+  IsDeleted bit [not null, default: 0]
+  DeletedAt datetime2 [null]
+  DeletedBy nvarchar [null]
+
+  Note: 'Fuel uplift transactions; FK delete behavior Restrict'
+}
+
+// ─── Identity (ASP.NET Core Identity) ────────────────────────
+
+Table AspNetUsers {
+  Id nvarchar(450) [pk]
+  UserName nvarchar(256) [null]
+  NormalizedUserName nvarchar(256) [null, unique]
+  Email nvarchar(256) [null]
+  NormalizedEmail nvarchar(256) [null]
+  EmailConfirmed bit [not null]
+  PasswordHash nvarchar [null]
+  SecurityStamp nvarchar [null]
+  ConcurrencyStamp nvarchar [null]
+  PhoneNumber nvarchar [null]
+  PhoneNumberConfirmed bit [not null]
+  TwoFactorEnabled bit [not null]
+  LockoutEnd datetimeoffset [null]
+  LockoutEnabled bit [not null]
+  AccessFailedCount int [not null]
+  FullName nvarchar [not null, note: 'ApplicationUser extension']
+  CreatedAt datetime2 [not null, note: 'ApplicationUser extension']
+  AirlineId int [null, ref: > Airlines.Id, note: 'AirlineExecutive scope']
+  FuelCompanyId int [null, ref: > FuelCompanies.Id, note: 'FuelSupplyExecutive scope']
+  AirportId int [null, ref: > Airports.Id, note: 'FuelCoordinator scope']
+
+  Note: 'ApplicationUser — role org links are optional FKs'
+}
+
+Table AspNetRoles {
+  Id nvarchar(450) [pk]
+  Name nvarchar(256) [null]
+  NormalizedName nvarchar(256) [null, unique]
+  ConcurrencyStamp nvarchar [null]
+
+  Note: 'Admin, AirlineExecutive, FuelSupplyExecutive, FuelCoordinator'
+}
+
+Table AspNetUserRoles {
+  UserId nvarchar(450) [pk, ref: > AspNetUsers.Id]
+  RoleId nvarchar(450) [pk, ref: > AspNetRoles.Id]
+
+  Note: 'User ↔ role assignment (many-to-many)'
+}
+
+Table AspNetRoleClaims {
+  Id int [pk, increment]
+  RoleId nvarchar(450) [not null, ref: > AspNetRoles.Id]
+  ClaimType nvarchar [null]
+  ClaimValue nvarchar [null]
+}
+
+Table AspNetUserClaims {
+  Id int [pk, increment]
+  UserId nvarchar(450) [not null, ref: > AspNetUsers.Id]
+  ClaimType nvarchar [null]
+  ClaimValue nvarchar [null]
+}
+
+Table AspNetUserLogins {
+  LoginProvider nvarchar(450) [pk]
+  ProviderKey nvarchar(450) [pk]
+  ProviderDisplayName nvarchar [null]
+  UserId nvarchar(450) [not null, ref: > AspNetUsers.Id]
+}
+
+Table AspNetUserTokens {
+  UserId nvarchar(450) [pk, ref: > AspNetUsers.Id]
+  LoginProvider nvarchar(450) [pk]
+  Name nvarchar(450) [pk]
+  Value nvarchar [null]
+}
+
+// ─── Table groups (visual layout on dbdiagram.io) ────────────
+
+TableGroup master_data {
+  Airlines
+  Aircrafts
+  Airports
+  FuelCompanies
+}
+
+TableGroup transactions {
+  FuelTransactions
+}
+
+TableGroup identity {
+  AspNetUsers
+  AspNetRoles
+  AspNetUserRoles
+  AspNetRoleClaims
+  AspNetUserClaims
+  AspNetUserLogins
+  AspNetUserTokens
+}
