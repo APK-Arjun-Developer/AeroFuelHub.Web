@@ -14,9 +14,11 @@
 
     </div>
 
-    <form method="post">
+    <form asp-controller="Profile" asp-action="Index" method="post">
 
         <div class="card-body">
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
             <div class="row">
 
@@ -26,6 +28,8 @@
 
                     <input asp-for="FullName" class="form-control" />
 
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+
                 </div>
 
                 <div class="col-md-6 mb-3">
@@ -34,13 +38,15 @@
 
                     <input asp-for="Email" class="form-control" />
 
+                    <span asp-validation-for="Email" class="text-danger"></span>
+
                 </div>
 
                 <div class="col-md-6 mb-3">
 
-                    <label>Role</label>
+                    <label asp-for="Role"></label>
 
-                    <input value="@Model.Role" class="form-control" readonly />
+                    <input value="@Model.Role" class="form-control" readonly tabindex="-1" />
 
                 </div>
 
@@ -48,9 +54,9 @@
                 {
                     <div class="col-md-6 mb-3">
 
-                        <label>Airline</label>
+                        <label asp-for="Airline"></label>
 
-                        <input value="@Model.Airline" class="form-control" readonly />
+                        <input value="@Model.Airline" class="form-control" readonly tabindex="-1" />
 
                     </div>
                 }
@@ -59,9 +65,9 @@
                 {
                     <div class="col-md-6 mb-3">
 
-                        <label>Fuel Company</label>
+                        <label asp-for="FuelCompany"></label>
 
-                        <input value="@Model.FuelCompany" class="form-control" readonly />
+                        <input value="@Model.FuelCompany" class="form-control" readonly tabindex="-1" />
 
                     </div>
                 }
@@ -70,24 +76,26 @@
                 {
                     <div class="col-md-6 mb-3">
 
-                        <label>Airport</label>
+                        <label asp-for="Airport"></label>
 
-                        <input value="@Model.Airport" class="form-control" readonly />
+                        <input value="@Model.Airport" class="form-control" readonly tabindex="-1" />
 
                     </div>
                 }
 
             </div>
 
-            <div class="card-footer">
+        </div>
 
-                <button class="btn btn-primary">
+        <div class="card-footer">
 
-                    Update Profile
+            <button type="submit" class="btn btn-primary">
 
-                </button>
+                Update Profile
 
-            </div>
+            </button>
+
+        </div>
 
     </form>
 

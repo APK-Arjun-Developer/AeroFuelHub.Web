@@ -1,6 +1,7 @@
 using AeroFuelHub.Web.Data;
 using AeroFuelHub.Web.Models.Entities;
 using AeroFuelHub.Web.Repositories.Interfaces;
+using AeroFuelHub.Web.ViewModels.FuelTransaction;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,6 +36,24 @@ public class FuelTransactionRepository : IFuelTransactionRepository
     public Task<List<SelectListItem>> GetAircraftsAsync() => _context.Aircrafts
         .AsNoTracking()
         .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Model })
+        .ToListAsync();
+
+    public Task<List<AircraftOptionViewModel>> GetAircraftOptionsAsync() => _context.Aircrafts
+        .AsNoTracking()
+        .OrderBy(x => x.Model)
+        .Select(x => new AircraftOptionViewModel
+        {
+            Id = x.Id,
+            AirlineId = x.AirlineId,
+            Label = x.Model + " (" + x.AircraftCode + ")"
+        })
+        .ToListAsync();
+
+    public Task<List<SelectListItem>> GetAircraftsByAirlineAsync(int airlineId) => _context.Aircrafts
+        .AsNoTracking()
+        .Where(x => x.AirlineId == airlineId)
+        .OrderBy(x => x.Model)
+        .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Model + " (" + x.AircraftCode + ")" })
         .ToListAsync();
 
     public Task<List<SelectListItem>> GetAirportsAsync() => _context.Airports

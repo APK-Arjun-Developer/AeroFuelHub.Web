@@ -12,44 +12,58 @@
         </h3>
     </div>
 
-    <form asp-action="Create" method="post">
+    <form asp-action="Create" method="post" id="createFuelTransactionForm">
 
         <div class="card-body">
 
-            <div asp-validation-summary="All" class="text-danger mb-3">
-            </div>
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
             <div class="row">
 
                 <div class="col-md-6 mb-3">
 
-                    <label class="form-label">
-                        Airline
-                    </label>
+                    <label asp-for="AirlineId"></label>
 
-                    <select asp-for="AirlineId" asp-items="Model.Airlines" class="form-select">
+                    <select asp-for="AirlineId" asp-items="Model.Airlines" id="AirlineId" class="form-select"
+                        disabled="@(Model.IsAirlineLocked ? "disabled" : null)">
 
-                        <option value="">
-                            Select Airline
-                        </option>
+                        <option value="">Select Airline</option>
 
                     </select>
+
+                    @if (Model.IsAirlineLocked)
+                    {
+                        <input type="hidden" asp-for="AirlineId" />
+                    }
+
+                    <span asp-validation-for="AirlineId" class="text-danger"></span>
 
                 </div>
 
                 <div class="col-md-6 mb-3">
 
-                    <label class="form-label">
-                        Aircraft
-                    </label>
+                    <label asp-for="AircraftId"></label>
 
-                    <select asp-for="AircraftId" asp-items="Model.Aircrafts" class="form-select">
+                    <select asp-for="AircraftId" id="AircraftId" class="form-select">
 
-                        <option value="">
-                            Select Aircraft
-                        </option>
+                        <option value="">Select Aircraft</option>
+
+                        @foreach (var aircraft in Model.AircraftOptions)
+                        {
+                            if (Model.AircraftId == aircraft.Id)
+                            {
+                                <option value="@aircraft.Id" data-airline-id="@aircraft.AirlineId" selected="selected">
+                                    @aircraft.Label</option>
+                            }
+                            else
+                            {
+                                <option value="@aircraft.Id" data-airline-id="@aircraft.AirlineId">@aircraft.Label</option>
+                            }
+                        }
 
                     </select>
+
+                    <span asp-validation-for="AircraftId" class="text-danger"></span>
 
                 </div>
 
@@ -57,7 +71,7 @@
                 {
                     <div class="col-md-6 mb-3">
 
-                        <label>Airport</label>
+                        <label asp-for="AirportId"></label>
 
                         <select asp-for="AirportId" asp-items="Model.Airports" class="form-select">
 
@@ -67,14 +81,14 @@
 
                         </select>
 
+                        <span asp-validation-for="AirportId" class="text-danger"></span>
+
                     </div>
                 }
 
                 <div class="col-md-6 mb-3">
 
-                    <label class="form-label">
-                        Fuel Company
-                    </label>
+                    <label asp-for="FuelCompanyId"></label>
 
                     <select asp-for="FuelCompanyId" asp-items="Model.FuelCompanies" class="form-select">
 
@@ -84,6 +98,8 @@
 
                     </select>
 
+                    <span asp-validation-for="FuelCompanyId" class="text-danger"></span>
+
                 </div>
 
                 <div class="col-md-6 mb-3">
@@ -91,6 +107,8 @@
                     <label asp-for="FlightNumber"></label>
 
                     <input asp-for="FlightNumber" class="form-control" />
+
+                    <span asp-validation-for="FlightNumber" class="text-danger"></span>
 
                 </div>
 
@@ -100,6 +118,8 @@
 
                     <input asp-for="FuelQuantity" id="fuelQuantity" class="form-control" />
 
+                    <span asp-validation-for="FuelQuantity" class="text-danger"></span>
+
                 </div>
 
                 <div class="col-md-6 mb-3">
@@ -108,13 +128,15 @@
 
                     <input asp-for="PricePerLiter" id="pricePerLiter" class="form-control" />
 
+                    <span asp-validation-for="PricePerLiter" class="text-danger"></span>
+
                 </div>
 
                 <div class="col-md-6 mb-3">
 
                     <label asp-for="TotalAmount"></label>
 
-                    <input asp-for="TotalAmount" id="totalAmount" class="form-control" readonly />
+                    <input asp-for="TotalAmount" id="totalAmount" class="form-control" readonly tabindex="-1" />
 
                 </div>
 
@@ -122,8 +144,9 @@
 
                     <label asp-for="Remarks"></label>
 
-                    <textarea asp-for="Remarks" class="form-control">
-                    </textarea>
+                    <textarea asp-for="Remarks" class="form-control"></textarea>
+
+                    <span asp-validation-for="Remarks" class="text-danger"></span>
 
                 </div>
 
@@ -146,6 +169,10 @@
 </div>
 
 @section Scripts {
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 
     <script>
 
@@ -171,17 +198,37 @@
         $('#pricePerLiter')
             .on('keyup change', calculateTotal);
 
-        $('form').submit(function () {
+        function filterAircraftByAirline() {
+            const airlineId = $('#AirlineId').val();
+            const $aircraft = $('#AircraftId');
+            const selected = $aircraft.val();
 
-            $('#submitBtn')
-                .prop('disabled', true);
+            $aircraft.find('option').each(function () {
+                const $option = $(this);
+                if (!$option.val()) {
+                    $option.prop('hidden', false);
+                    return;
+                }
+                const matches = !airlineId || String($option.data('airline-id')) === String(airlineId);
+                $option.prop('hidden', !matches);
+            });
 
-            $('#submitBtn')
-                .text('Saving...');
+            if ($aircraft.find('option:selected').prop('hidden')) {
+                $aircraft.val('');
+            }
+        }
+
+        $('#AirlineId').on('change', filterAircraftByAirline);
+        filterAircraftByAirline();
+
+        $('#createFuelTransactionForm').on('submit', function () {
+            if (!$(this).valid()) {
+                return;
+            }
+
+            $('#submitBtn').prop('disabled', true).text('Saving...');
         });
 
     </script>
-
-    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 
 }

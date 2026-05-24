@@ -23,14 +23,26 @@ public class FuelTransactionService : IFuelTransactionService
 
     public async Task<CreateFuelTransactionViewModel> BuildCreateViewModelAsync(ClaimsPrincipal user)
     {
+        var currentUser = await _userManager.GetUserAsync(user);
+        var aircraftOptions = await _fuelTransactionRepository.GetAircraftOptionsAsync();
+
         var model = new CreateFuelTransactionViewModel
         {
             Airlines = await _fuelTransactionRepository.GetAirlinesAsync(),
-            Aircrafts = await _fuelTransactionRepository.GetAircraftsAsync(),
+            AircraftOptions = aircraftOptions,
             FuelCompanies = await _fuelTransactionRepository.GetFuelCompaniesAsync()
         };
 
-        var currentUser = await _userManager.GetUserAsync(user);
+        if (user.IsInRole(Roles.AirlineExecutive) && currentUser?.AirlineId != null)
+        {
+            model.AirlineId = currentUser.AirlineId.Value;
+            model.IsAirlineLocked = true;
+            model.Airlines = model.Airlines
+                .Where(x => x.Value == currentUser.AirlineId.Value.ToString())
+                .ToList();
+            model.Aircrafts = await _fuelTransactionRepository.GetAircraftsByAirlineAsync(currentUser.AirlineId.Value);
+        }
+
         if (user.IsInRole(Roles.Admin))
             model.Airports = await _fuelTransactionRepository.GetAirportsAsync();
         else if (user.IsInRole(Roles.FuelCoordinator) && currentUser?.AirportId != null)

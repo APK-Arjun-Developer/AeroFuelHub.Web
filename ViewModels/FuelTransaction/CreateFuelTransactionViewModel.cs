@@ -44,6 +44,10 @@ public class CreateFuelTransactionViewModel
 
     public List<SelectListItem> Aircrafts { get; set; } = [];
 
+    public List<AircraftOptionViewModel> AircraftOptions { get; set; } = [];
+
+    public bool IsAirlineLocked { get; set; }
+
     public List<SelectListItem> Airports { get; set; } = [];
 
     public List<SelectListItem> FuelCompanies { get; set; } = [];

@@ -20,8 +20,7 @@
 
         <div class="card-body">
 
-            <div asp-validation-summary="All" class="text-danger mb-3">
-            </div>
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
             <div class="row">
 
@@ -31,6 +30,8 @@
 
                     <input asp-for="FullName" class="form-control" />
 
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+
                 </div>
 
                 <div class="col-md-6 mb-3">
@@ -39,21 +40,25 @@
 
                     <input asp-for="Email" class="form-control" />
 
+                    <span asp-validation-for="Email" class="text-danger"></span>
+
                 </div>
 
                 <div class="col-md-6 mb-3">
 
-                    <label>Role</label>
+                    <label asp-for="Role"></label>
 
                     <select asp-for="Role" asp-items="Model.Roles" id="roleSelect" class="form-select">
 
                     </select>
 
+                    <span asp-validation-for="Role" class="text-danger"></span>
+
                 </div>
 
                 <div class="col-md-6 mb-3" id="airlineSection" style="display:none;">
 
-                    <label>Airline</label>
+                    <label asp-for="AirlineId"></label>
 
                     <select asp-for="AirlineId" asp-items="Model.Airlines" class="form-select">
 
@@ -63,11 +68,13 @@
 
                     </select>
 
+                    <span asp-validation-for="AirlineId" class="text-danger"></span>
+
                 </div>
 
                 <div class="col-md-6 mb-3" id="fuelCompanySection" style="display:none;">
 
-                    <label>Fuel Company</label>
+                    <label asp-for="FuelCompanyId"></label>
 
                     <select asp-for="FuelCompanyId" asp-items="Model.FuelCompanies" class="form-select">
 
@@ -77,11 +84,13 @@
 
                     </select>
 
+                    <span asp-validation-for="FuelCompanyId" class="text-danger"></span>
+
                 </div>
 
                 <div class="col-md-6 mb-3" id="airportSection" style="display:none;">
 
-                    <label>Airport</label>
+                    <label asp-for="AirportId"></label>
 
                     <select asp-for="AirportId" asp-items="Model.Airports" class="form-select">
 
@@ -90,6 +99,8 @@
                         </option>
 
                     </select>
+
+                    <span asp-validation-for="AirportId" class="text-danger"></span>
 
                 </div>
 
@@ -112,6 +123,10 @@
 </div>
 
 @section Scripts {
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 
     <script>
 
@@ -146,7 +161,5 @@
         toggleSections();
 
     </script>
-
-    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 
 }

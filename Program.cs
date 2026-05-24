@@ -93,9 +93,9 @@ using (var scope = app.Services.CreateScope())
 
     await DbSeeder.SeedAdminUserAsync(userManager);
 
-    await DbSeeder.SeedDemoUsersAsync(userManager, context);
-
     await MasterDataSeeder.SeedAsync(context);
+
+    await DbSeeder.SeedDemoUsersAsync(userManager, context);
 }
 
 app.Run();

@@ -40,11 +40,7 @@ public class FuelTransactionController : Controller
     {
         if (!ModelState.IsValid)
         {
-            var vm = await _fuelTransactionService.BuildCreateViewModelAsync(User);
-            model.Airlines = vm.Airlines;
-            model.Aircrafts = vm.Aircrafts;
-            model.Airports = vm.Airports;
-            model.FuelCompanies = vm.FuelCompanies;
+            MergeCreateDropdowns(model, await _fuelTransactionService.BuildCreateViewModelAsync(User));
             return View(model);
         }
 
@@ -52,11 +48,7 @@ public class FuelTransactionController : Controller
         if (!result.Success)
         {
             ModelState.AddModelError(result.ErrorKey!, result.ErrorMessage!);
-            var vm = await _fuelTransactionService.BuildCreateViewModelAsync(User);
-            model.Airlines = vm.Airlines;
-            model.Aircrafts = vm.Aircrafts;
-            model.Airports = vm.Airports;
-            model.FuelCompanies = vm.FuelCompanies;
+            MergeCreateDropdowns(model, await _fuelTransactionService.BuildCreateViewModelAsync(User));
             return View(model);
         }
 
@@ -107,5 +99,15 @@ public class FuelTransactionController : Controller
         if (!deleted) return NotFound();
         _notyf.Success("Transaction deleted successfully");
         return RedirectToAction(nameof(History));
+    }
+
+    private static void MergeCreateDropdowns(CreateFuelTransactionViewModel target, CreateFuelTransactionViewModel source)
+    {
+        target.Airlines = source.Airlines;
+        target.Aircrafts = source.Aircrafts;
+        target.AircraftOptions = source.AircraftOptions;
+        target.Airports = source.Airports;
+        target.FuelCompanies = source.FuelCompanies;
+        target.IsAirlineLocked = source.IsAirlineLocked;
     }
 }

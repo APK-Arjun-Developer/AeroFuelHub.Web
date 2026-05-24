@@ -143,17 +143,5 @@ public static class DbSeeder
                     roles[i]);
             }
         }
-
-        if (dubaiAirport != null)
-        {
-            var existingCoordinator =
-                await userManager.FindByEmailAsync("coordinator@aerofuelhub.com");
-
-            if (existingCoordinator != null && existingCoordinator.AirportId == null)
-            {
-                existingCoordinator.AirportId = dubaiAirport.Id;
-                await userManager.UpdateAsync(existingCoordinator);
-            }
-        }
     }
 }

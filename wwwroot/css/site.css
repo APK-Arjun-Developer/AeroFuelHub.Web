@@ -14,11 +14,12 @@ body {
   margin-bottom: 60px;
 }
 
-.btn:focus,
-.btn:active:focus,
+.btn:focus:not(:disabled),
+.btn:active:focus:not(:disabled),
 .btn-link.nav-link:focus,
-.form-control:focus,
-.form-check-input:focus {
+.form-control:focus:not(:disabled):not([readonly]),
+.form-select:focus:not(:disabled),
+.form-check-input:focus:not(:disabled) {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
@@ -228,4 +229,49 @@ body.layout-fixed .content-wrapper {
   background-color: #343a40 !important;
   color: #fff !important;
   border-color: #454d55 !important;
+}
+
+/* Field validation messages below inputs */
+span.text-danger.field-validation-valid {
+  display: none;
+}
+
+span.text-danger[data-valmsg-for] {
+  display: block;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* Disabled & readonly inputs — no text cursor, no focus ring */
+.form-control:disabled,
+.form-control[readonly],
+.form-select:disabled {
+  cursor: default;
+  user-select: none;
+  background-color: #e9ecef;
+  opacity: 1;
+}
+
+.form-control:disabled:focus,
+.form-control[readonly]:focus,
+.form-select:disabled:focus {
+  outline: none;
+  box-shadow: none;
+  border-color: #ced4da;
+}
+
+.dark-mode .form-control:disabled,
+.dark-mode .form-control[readonly],
+.dark-mode .form-select:disabled {
+  background-color: #3a4046 !important;
+  color: #adb5bd !important;
+  cursor: default;
+}
+
+.dark-mode .form-control:disabled:focus,
+.dark-mode .form-control[readonly]:focus,
+.dark-mode .form-select:disabled:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: #6c757d !important;
 }
