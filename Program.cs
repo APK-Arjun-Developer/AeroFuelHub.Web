@@ -12,6 +12,12 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException("Connection string 'DefaultConnection' is not configured");
+}
+
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddNotyf(config =>
@@ -24,8 +30,7 @@ builder.Services.AddNotyf(config =>
 });
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(connectionString));
 
 builder.Services
     .AddIdentity<ApplicationUser, IdentityRole>()
@@ -88,6 +93,8 @@ using (var scope = app.Services.CreateScope())
 
     var context =
         services.GetRequiredService<ApplicationDbContext>();
+
+    await context.Database.MigrateAsync();
 
     await DbSeeder.SeedRolesAsync(roleManager);
 

@@ -36,15 +36,7 @@ Controller → Service → Repository → DbContext
 ## Setup
 
 1. Clone the repository and open the solution folder.
-
-2. Update the connection string in `appsettings.json` if needed:
-
-```json
-"ConnectionStrings": {
-  "DefaultConnection": "Server=localhost\\SQLEXPRESS;Database=AeroFuelHubDb;Trusted_Connection=True;TrustServerCertificate=True;"
-}
-```
-
+2. **Development** — connection string is in `appsettings.Development.json` (local SQL Express). Update it if your SQL instance differs.
 3. Apply migrations and run the app:
 
 ```bash
@@ -54,16 +46,40 @@ dotnet run
 
 On first run, the app seeds roles, demo users, and master data (airlines, airports, fuel companies, aircraft).
 
-4. Open the app in a browser (typically `https://localhost:7xxx` — see launch output).
+1. Open the app in a browser (typically `https://localhost:7xxx` — see launch output).
+
+## Production (MonsterASP.NET)
+
+Configuration uses `ASPNETCORE_ENVIRONMENT=Production` and loads:
+
+1. `appsettings.json`
+2. `appsettings.Production.json` — put your MonsterASP connection string here before publish (file is gitignored)
+3. Host environment variables (alternative on MonsterASP)
+
+**On MonsterASP control panel**, set:
+
+| Setting | Value |
+|---------|--------|
+| Environment | `Production` |
+| Connection string name | `DefaultConnection` |
+| Connection string | Your MSSQL string from the database page |
+
+Or set environment variable:
+
+`ConnectionStrings__DefaultConnection` = your MonsterASP SQL connection string
+
+Migrations run automatically on startup (`Database.MigrateAsync()`). Republish after code changes.
 
 ## Demo Credentials
 
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | admin@aerofuelhub.com | Admin@123 |
-| Airline Executive | airline@aerofuelhub.com | Password@123 |
-| Fuel Supply Executive | fuel@aerofuelhub.com | Password@123 |
-| Fuel Coordinator | coordinator@aerofuelhub.com | Password@123 |
+
+| Role                  | Email                                                             | Password     |
+| --------------------- | ----------------------------------------------------------------- | ------------ |
+| Admin                 | [admin@aerofuelhub.com](mailto:admin@aerofuelhub.com)             | Admin@123    |
+| Airline Executive     | [airline@aerofuelhub.com](mailto:airline@aerofuelhub.com)         | Password@123 |
+| Fuel Supply Executive | [fuel@aerofuelhub.com](mailto:fuel@aerofuelhub.com)               | Password@123 |
+| Fuel Coordinator      | [coordinator@aerofuelhub.com](mailto:coordinator@aerofuelhub.com) | Password@123 |
+
 
 ## Project Structure
 
@@ -77,3 +93,4 @@ Views/                Razor views
 Data/                 DbContext and seeders
 Constants/            Role name constants
 ```
+
