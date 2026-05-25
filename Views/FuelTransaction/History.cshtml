@@ -83,11 +83,11 @@
                                     <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="View details">
                                         <i class="fas fa-eye" aria-hidden="true"></i>
                                     </a>
-                                    <form asp-action="Delete" method="post" class="d-inline">
+                                    <form asp-action="Delete" method="post" class="d-inline"
+                                          data-confirm="Delete this fuel transaction? This action cannot be undone.">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="id" value="@item.Id" />
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete transaction"
-                                                onclick="return confirm('Delete this transaction?');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete transaction">
                                             <i class="fas fa-trash" aria-hidden="true"></i>
                                         </button>
                                     </form>

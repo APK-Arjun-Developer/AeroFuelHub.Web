@@ -66,11 +66,11 @@
                                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="Edit user">
                                         <i class="fas fa-pen" aria-hidden="true"></i>
                                     </a>
-                                    <form asp-action="Delete" method="post" class="d-inline">
+                                    <form asp-action="Delete" method="post" class="d-inline"
+                                          data-confirm="Delete this user? This action cannot be undone.">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="id" value="@item.Id" />
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete user"
-                                                onclick="return confirm('Delete this user?');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete user">
                                             <i class="fas fa-trash" aria-hidden="true"></i>
                                         </button>
                                     </form>
