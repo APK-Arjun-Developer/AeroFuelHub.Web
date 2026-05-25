@@ -1,62 +1,158 @@
+@using AeroFuelHub.Web.Enums
 @model IEnumerable<AeroFuelHub.Web.Models.Entities.FuelTransaction>
 
 @{
     ViewData["Title"] = "Reports";
+    ViewData["Subtitle"] = "Filter transactions by date and export results";
     var startDate = Context.Request.Query["startDate"].ToString();
     var endDate = Context.Request.Query["endDate"].ToString();
+    var items = Model.ToList();
+    var totalAmount = items.Sum(x => x.TotalAmount);
+    var totalQuantity = items.Sum(x => x.FuelQuantity);
+    var hasDateFilter = !string.IsNullOrWhiteSpace(startDate) || !string.IsNullOrWhiteSpace(endDate);
 }
 
-<div class="card">
+<div class="card card-app mb-4">
     <div class="card-header">
-        <form method="get">
-            <div class="row">
-                <div class="col-md-3">
-                    <input type="date" name="startDate" value="@startDate" class="form-control" />
+        <form method="get" class="search-toolbar search-toolbar--dates">
+            <div class="search-toolbar__dates">
+                <div class="search-toolbar__field">
+                    <label for="startDate" class="form-label small text-muted mb-1">From date</label>
+                    <input type="date" id="startDate" name="startDate" value="@startDate" class="form-control" />
                 </div>
-                <div class="col-md-3">
-                    <input type="date" name="endDate" value="@endDate" class="form-control" />
-                </div>
-                <div class="col-md-2">
-                    <button class="btn btn-primary">Filter</button>
+                <div class="search-toolbar__field">
+                    <label for="endDate" class="form-label small text-muted mb-1">To date</label>
+                    <input type="date" id="endDate" name="endDate" value="@endDate" class="form-control" />
                 </div>
             </div>
+            <div class="search-toolbar__actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-filter me-1" aria-hidden="true"></i>Apply filter
+                </button>
+                @if (hasDateFilter)
+                {
+                    <a asp-action="Reports" class="btn btn-outline-secondary">Clear</a>
+                }
+            </div>
+            <a asp-action="ExportExcel"
+               asp-route-startDate="@startDate"
+               asp-route-endDate="@endDate"
+               class="btn btn-success search-toolbar__export">
+                <i class="fas fa-file-excel me-1" aria-hidden="true"></i>Export Excel
+            </a>
         </form>
     </div>
+</div>
 
-    <div class="card-body">
-        <a asp-action="ExportExcel"
-           asp-route-startDate="@startDate"
-           asp-route-endDate="@endDate"
-           class="btn btn-success mb-3">
-            Export Excel
-        </a>
-
-        <div class="table-responsive">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Transaction</th>
-                        <th>Airline</th>
-                        <th>Airport</th>
-                        <th>Fuel Company</th>
-                        <th>Total Amount</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td>@item.TransactionNumber</td>
-                            <td>@item.Airline?.Name</td>
-                            <td>@item.Airport?.Name</td>
-                            <td>@item.FuelCompany?.Name</td>
-                            <td>₹ @item.TotalAmount.ToString("N2")</td>
-                            <td>@item.TransactionDate.ToString("dd MMM yyyy")</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="stat-card stat-card--primary">
+            <div class="stat-card__icon"><i class="fas fa-list-ol" aria-hidden="true"></i></div>
+            <div>
+                <span class="stat-card__value">@items.Count.ToString("N0")</span>
+                <span class="stat-card__label">Transactions in report</span>
+            </div>
         </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card stat-card--success">
+            <div class="stat-card__icon"><i class="fas fa-indian-rupee-sign" aria-hidden="true"></i></div>
+            <div>
+                <span class="stat-card__value">₹@totalAmount.ToString("N0")</span>
+                <span class="stat-card__label">Total amount</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card stat-card--warning">
+            <div class="stat-card__icon"><i class="fas fa-oil-can" aria-hidden="true"></i></div>
+            <div>
+                <span class="stat-card__value">@totalQuantity.ToString("N0") L</span>
+                <span class="stat-card__label">Total fuel quantity</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card card-app">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="card-title mb-0">Transaction report</h3>
+        @if (hasDateFilter)
+        {
+            <span class="badge text-bg-light text-secondary fw-normal">
+                @(string.IsNullOrWhiteSpace(startDate) ? "Any" : startDate)
+                —
+                @(string.IsNullOrWhiteSpace(endDate) ? "Any" : endDate)
+            </span>
+        }
+        else
+        {
+            <span class="badge text-bg-light text-secondary fw-normal">All dates</span>
+        }
+    </div>
+    <div class="card-body p-0">
+        @if (!items.Any())
+        {
+            <div class="recent-txn-empty">
+                <i class="fas fa-chart-bar fa-2x mb-2 d-block opacity-50" aria-hidden="true"></i>
+                @if (hasDateFilter)
+                {
+                    <span>No transactions found for the selected date range</span>
+                }
+                else
+                {
+                    <span>No transactions available to report</span>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-app table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Transaction</th>
+                            <th>Airline</th>
+                            <th>Airport</th>
+                            <th>Fuel company</th>
+                            <th>Status</th>
+                            <th class="text-end">Total</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in items)
+                        {
+                            var statusClass = item.Status switch
+                            {
+                                FuelTransactionStatus.Completed => "status-badge--success",
+                                FuelTransactionStatus.Cancelled => "status-badge--danger",
+                                _ => "status-badge--warning"
+                            };
+                            <tr>
+                                <td>
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="fw-semibold text-decoration-none">
+                                        @item.TransactionNumber
+                                    </a>
+                                </td>
+                                <td>@item.Airline?.Name</td>
+                                <td>@item.Airport?.Name</td>
+                                <td>@item.FuelCompany?.Name</td>
+                                <td><span class="status-badge @statusClass">@item.Status</span></td>
+                                <td class="text-end fw-semibold text-primary">₹@item.TotalAmount.ToString("N2")</td>
+                                <td class="text-muted">@item.TransactionDate.ToString("dd MMM yyyy")</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="table-app-footer">
+                            <td colspan="5" class="text-end fw-semibold">Report totals</td>
+                            <td class="text-end fw-bold text-primary">₹@totalAmount.ToString("N2")</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        }
     </div>
 </div>

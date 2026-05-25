@@ -2,6 +2,8 @@ namespace AeroFuelHub.Web.ViewModels.Dashboard;
 
 public class RecentTransactionViewModel
 {
+    public int Id { get; set; }
+
     public string TransactionNumber { get; set; } = string.Empty;
 
     public string Airline { get; set; } = string.Empty;

@@ -1,15 +1,50 @@
+@using AeroFuelHub.Web.Constants
 @{
     ViewData["Title"] = "Access Denied";
 }
 
-<div class="container mt-5 text-center">
+@section Styles {
+    <link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
+}
 
-    <h1 class="text-danger">
-        Access Denied
-    </h1>
-
-    <p>
-        You do not have permission to access this page.
-    </p>
-
+<div class="status-page">
+    <div class="status-card">
+        <div class="status-icon status-icon--danger" aria-hidden="true">
+            <i class="fas fa-ban"></i>
+        </div>
+        <h2>Access denied</h2>
+        <p>
+            You don't have permission to view this page.
+            If you believe this is a mistake, contact your administrator or return to your dashboard.
+        </p>
+        <div class="status-actions">
+            @if (User.IsInRole(Roles.Admin))
+            {
+                <a asp-controller="Dashboard" asp-action="Admin" class="btn btn-primary">
+                    <i class="fas fa-chart-line me-2" aria-hidden="true"></i>Go to dashboard
+                </a>
+            }
+            else if (User.IsInRole(Roles.AirlineExecutive))
+            {
+                <a asp-controller="Dashboard" asp-action="Airline" class="btn btn-primary">
+                    <i class="fas fa-chart-line me-2" aria-hidden="true"></i>Go to dashboard
+                </a>
+            }
+            else if (User.IsInRole(Roles.FuelSupplyExecutive))
+            {
+                <a asp-controller="Dashboard" asp-action="FuelSupply" class="btn btn-primary">
+                    <i class="fas fa-chart-pie me-2" aria-hidden="true"></i>Go to dashboard
+                </a>
+            }
+            else if (User.IsInRole(Roles.FuelCoordinator))
+            {
+                <a asp-controller="Dashboard" asp-action="Coordinator" class="btn btn-primary">
+                    <i class="fas fa-chart-pie me-2" aria-hidden="true"></i>Go to dashboard
+                </a>
+            }
+            <button type="button" class="btn btn-outline-secondary" onclick="history.back()">
+                <i class="fas fa-arrow-left me-2" aria-hidden="true"></i>Go back
+            </button>
+        </div>
+    </div>
 </div>

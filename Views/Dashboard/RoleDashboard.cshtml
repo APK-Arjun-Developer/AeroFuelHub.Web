@@ -1,164 +1,99 @@
+@using AeroFuelHub.Web.Constants
 @model AeroFuelHub.Web.ViewModels.Dashboard.RoleDashboardViewModel
 
 @{
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = Model.Title;
+    ViewData["Subtitle"] = "Your fuel transaction summary and recent activity";
 }
 
-<h2 class="mb-4">
-    @Model.Title
-</h2>
-
-<div class="row">
-
-    <div class="col-lg-4 col-6">
-
-        <div class="small-box bg-info">
-
-            <div class="inner">
-
-                <h3>@Model.TotalTransactions</h3>
-
-                <p>Total Transactions</p>
-
-            </div>
-
-            <div class="icon">
-
-                <i class="fas fa-gas-pump"></i>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <div class="col-lg-4 col-6">
-
-        <div class="small-box bg-success">
-
-            <div class="inner">
-
-                <h3>
-                    ₹ @Model.TotalRevenue.ToString("N2")
-                </h3>
-
-                <p>Total Revenue</p>
-
-            </div>
-
-            <div class="icon">
-
-                <i class="fas fa-dollar-sign"></i>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <div class="col-lg-4 col-6">
-
-        <div class="small-box bg-warning">
-
-            <div class="inner">
-
-                <h3>
-                    @Model.TotalFuelQuantity
-                </h3>
-
-                <p>Total Fuel Quantity</p>
-
-            </div>
-
-            <div class="icon">
-
-                <i class="fas fa-oil-can"></i>
-
-            </div>
-
-        </div>
-
-    </div>
-
+<div class="quick-actions">
+    @if (User.IsInRole(Roles.FuelCoordinator))
+    {
+        <a asp-controller="FuelTransaction" asp-action="Create" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus-circle me-1" aria-hidden="true"></i>New fuel entry
+        </a>
+    }
+    <a asp-controller="FuelTransaction" asp-action="History" class="btn btn-outline-secondary btn-sm">
+        <i class="fas fa-gas-pump me-1" aria-hidden="true"></i>All transactions
+    </a>
+    <a asp-controller="FuelTransaction" asp-action="Reports" class="btn btn-outline-secondary btn-sm">
+        <i class="fas fa-chart-bar me-1" aria-hidden="true"></i>Reports
+    </a>
 </div>
 
-<div class="card">
-
-    <div class="card-header">
-
-        <h3 class="card-title">
-
-            Recent Transactions
-
-        </h3>
-
-    </div>
-
-    <div class="card-body p-0">
-
-        <div class="table-responsive">
-
-        <table class="table table-bordered">
-
-            <thead>
-
-                <tr>
-
-                    <th>Transaction</th>
-                    <th>Airline</th>
-                    <th>Total Amount</th>
-                    <th>Date</th>
-
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-                @if (Model.RecentTransactions.Any())
-                {
-                    @foreach (var item in Model.RecentTransactions)
-                    {
-                        <tr>
-
-                            <td>
-                                @item.TransactionNumber
-                            </td>
-
-                            <td>
-                                @item.Airline
-                            </td>
-
-                            <td>
-                                ₹ @item.TotalAmount.ToString("N2")
-                            </td>
-
-                            <td>
-                                @item.TransactionDate
-                            </td>
-
-                        </tr>
-                    }
-                }
-                else
-                {
-                    <tr>
-
-                        <td colspan="4" class="text-center">
-
-                            No transactions found
-
-                        </td>
-
-                    </tr>
-                }
-
-            </tbody>
-
-        </table>
-
+<div class="row g-3 mb-4">
+    <div class="col-lg-4 col-md-6">
+        <div class="stat-card stat-card--primary">
+            <div class="stat-card__icon"><i class="fas fa-gas-pump" aria-hidden="true"></i></div>
+            <div>
+                <span class="stat-card__value">@Model.TotalTransactions.ToString("N0")</span>
+                <span class="stat-card__label">Total transactions</span>
+            </div>
         </div>
-
     </div>
+    <div class="col-lg-4 col-md-6">
+        <div class="stat-card stat-card--success">
+            <div class="stat-card__icon"><i class="fas fa-indian-rupee-sign" aria-hidden="true"></i></div>
+            <div>
+                <span class="stat-card__value">₹@Model.TotalRevenue.ToString("N0")</span>
+                <span class="stat-card__label">Total revenue</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6">
+        <div class="stat-card stat-card--warning">
+            <div class="stat-card__icon"><i class="fas fa-oil-can" aria-hidden="true"></i></div>
+            <div>
+                <span class="stat-card__value">@Model.TotalFuelQuantity.ToString("N0")</span>
+                <span class="stat-card__label">Total fuel quantity (L)</span>
+            </div>
+        </div>
+    </div>
+</div>
 
+<div class="card card-app">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="card-title">Recent transactions</h3>
+        <a asp-controller="FuelTransaction" asp-action="History" class="small text-decoration-none">View all</a>
+    </div>
+    <div class="card-body p-0">
+        @if (!Model.RecentTransactions.Any())
+        {
+            <div class="recent-txn-empty">
+                <i class="fas fa-inbox fa-2x mb-2 d-block opacity-50" aria-hidden="true"></i>
+                No transactions found
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-app table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Transaction</th>
+                            <th>Airline</th>
+                            <th class="text-end">Amount</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.RecentTransactions)
+                        {
+                            <tr>
+                                <td>
+                                    <a asp-controller="FuelTransaction" asp-action="Details" asp-route-id="@item.Id"
+                                       class="fw-semibold text-decoration-none">
+                                        @item.TransactionNumber
+                                    </a>
+                                </td>
+                                <td>@item.Airline</td>
+                                <td class="text-end fw-semibold text-primary">₹@item.TotalAmount.ToString("N2")</td>
+                                <td class="text-muted">@item.TransactionDate.ToString("dd MMM yyyy")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
 </div>

@@ -1,202 +1,124 @@
+@using AeroFuelHub.Web.Constants
 @model AeroFuelHub.Web.ViewModels.User.CreateUserViewModel
 
 @{
     ViewData["Title"] = "Create User";
+    ViewData["Subtitle"] = "Add a new user and assign a role";
 }
 
-<div class="card">
-
+<div class="card card-app">
     <div class="card-header">
-
         <h3 class="card-title">
-            Create User
+            <i class="fas fa-user-plus me-2 text-primary" aria-hidden="true"></i>New user
         </h3>
-
     </div>
 
-    <form asp-action="Create" method="post">
-
+    <form asp-action="Create" method="post" id="userForm">
         <div class="card-body">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
 
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
-            <div class="row">
-
-                <div class="col-md-6 mb-3">
-
-                    <label asp-for="FullName"></label>
-
-                    <input asp-for="FullName" class="form-control" />
-
-                    <span asp-validation-for="FullName" class="text-danger"></span>
-
-                </div>
-
-                <div class="col-md-6 mb-3">
-
-                    <label asp-for="Email"></label>
-
-                    <input asp-for="Email" class="form-control" />
-
-                    <span asp-validation-for="Email" class="text-danger"></span>
-
-                </div>
-
-                <div class="col-md-6 mb-3">
-
-                    <label asp-for="Password"></label>
-
-                    <div class="input-group">
-
-                        <input asp-for="Password" type="password" class="form-control password-field" />
-
-                        <button type="button" class="btn btn-outline-secondary togglePassword">
-
-                            <i class="fas fa-eye"></i>
-
-                        </button>
-
+            <div class="form-section">
+                <h4 class="form-section__title">Account details</h4>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="FullName" class="form-label"></label>
+                        <input asp-for="FullName" class="form-control" placeholder="Full name" />
+                        <span asp-validation-for="FullName" class="text-danger"></span>
                     </div>
-
-                    <span asp-validation-for="Password" class="text-danger"></span>
-
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control" placeholder="email@company.com" autocomplete="username" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Password" class="form-label"></label>
+                        <div class="input-group">
+                            <input asp-for="Password" type="password" class="form-control password-field" autocomplete="new-password" />
+                            <button type="button" class="btn btn-outline-secondary togglePassword" aria-label="Show password">
+                                <i class="fas fa-eye" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
                 </div>
-
-                <div class="col-md-6 mb-3">
-
-                    <label asp-for="Role"></label>
-
-                    <select asp-for="Role" asp-items="Model.Roles" id="roleSelect" class="form-select">
-
-                        <option value="">
-                            Select Role
-                        </option>
-
-                    </select>
-
-                    <span asp-validation-for="Role" class="text-danger"></span>
-
-                </div>
-
-                <div class="col-md-6 mb-3" id="airlineSection" style="display:none;">
-
-                    <label asp-for="AirlineId"></label>
-
-                    <select asp-for="AirlineId" asp-items="Model.Airlines" class="form-select">
-
-                        <option value="">
-                            Select Airline
-                        </option>
-
-                    </select>
-
-                    <span asp-validation-for="AirlineId" class="text-danger"></span>
-
-                </div>
-
-                <div class="col-md-6 mb-3" id="fuelCompanySection" style="display:none;">
-
-                    <label asp-for="FuelCompanyId"></label>
-
-                    <select asp-for="FuelCompanyId" asp-items="Model.FuelCompanies" class="form-select">
-
-                        <option value="">
-                            Select Fuel Company
-                        </option>
-
-                    </select>
-
-                    <span asp-validation-for="FuelCompanyId" class="text-danger"></span>
-
-                </div>
-
-                <div class="col-md-6 mb-3" id="airportSection" style="display:none;">
-
-                    <label asp-for="AirportId"></label>
-
-                    <select asp-for="AirportId" asp-items="Model.Airports" class="form-select">
-
-                        <option value="">
-                            Select Airport
-                        </option>
-
-                    </select>
-
-                    <span asp-validation-for="AirportId" class="text-danger"></span>
-
-                </div>
-
             </div>
 
+            <div class="form-section mb-0">
+                <h4 class="form-section__title">Role &amp; assignment</h4>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Role" class="form-label"></label>
+                        <select asp-for="Role" asp-items="Model.Roles" id="roleSelect" class="form-select">
+                            <option value="">Select role</option>
+                        </select>
+                        <span asp-validation-for="Role" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6" id="airlineSection" style="display:none;">
+                        <label asp-for="AirlineId" class="form-label"></label>
+                        <select asp-for="AirlineId" asp-items="Model.Airlines" class="form-select">
+                            <option value="">Select airline</option>
+                        </select>
+                        <span asp-validation-for="AirlineId" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6" id="fuelCompanySection" style="display:none;">
+                        <label asp-for="FuelCompanyId" class="form-label"></label>
+                        <select asp-for="FuelCompanyId" asp-items="Model.FuelCompanies" class="form-select">
+                            <option value="">Select fuel company</option>
+                        </select>
+                        <span asp-validation-for="FuelCompanyId" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6" id="airportSection" style="display:none;">
+                        <label asp-for="AirportId" class="form-label"></label>
+                        <select asp-for="AirportId" asp-items="Model.Airports" class="form-select">
+                            <option value="">Select airport</option>
+                        </select>
+                        <span asp-validation-for="AirportId" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="card-footer">
-
-            <button type="submit" class="btn btn-primary">
-
-                Save User
-
+        <div class="card-footer bg-transparent border-top d-flex flex-wrap gap-2 justify-content-between align-items-center">
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1" aria-hidden="true"></i>Cancel
+            </a>
+            <button type="submit" class="btn btn-primary" id="submitBtn">
+                <i class="fas fa-check me-1" aria-hidden="true"></i>Save user
             </button>
-
         </div>
-
     </form>
-
 </div>
 
 @section Scripts {
-
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
     <script>
+        const Roles = {
+            AirlineExecutive: '@Roles.AirlineExecutive',
+            FuelSupplyExecutive: '@Roles.FuelSupplyExecutive',
+            FuelCoordinator: '@Roles.FuelCoordinator'
+        };
 
-        $('#roleSelect').change(function () {
+        function toggleRoleSections() {
+            const role = $('#roleSelect').val();
+            $('#airlineSection, #fuelCompanySection, #airportSection').hide();
+            if (role === Roles.AirlineExecutive) $('#airlineSection').show();
+            if (role === Roles.FuelSupplyExecutive) $('#fuelCompanySection').show();
+            if (role === Roles.FuelCoordinator) $('#airportSection').show();
+        }
 
-            let role = $(this).val();
+        $('#roleSelect').on('change', toggleRoleSections);
+        toggleRoleSections();
 
-            $('#airlineSection').hide();
-
-            $('#fuelCompanySection').hide();
-
-            $('#airportSection').hide();
-
-            if (role === 'AirlineExecutive') {
-
-                $('#airlineSection').show();
-            }
-
-            if (role === 'FuelSupplyExecutive') {
-
-                $('#fuelCompanySection').show();
-            }
-
-            if (role === 'FuelCoordinator') {
-
-                $('#airportSection').show();
-            }
+        $('.togglePassword').on('click', function () {
+            const input = $(this).closest('.input-group').find('input');
+            const isPassword = input.attr('type') === 'password';
+            input.attr('type', isPassword ? 'text' : 'password');
+            $(this).find('i').toggleClass('fa-eye fa-eye-slash');
         });
 
-        $('.togglePassword').click(function () {
-
-            let input =
-                $(this)
-                    .closest('.input-group')
-                    .find('input');
-
-            let type =
-                input.attr('type') === 'password'
-                    ? 'text'
-                    : 'password';
-
-            input.attr('type', type);
-
-            $(this)
-                .find('i')
-                .toggleClass('fa-eye fa-eye-slash');
+        $('#userForm').on('submit', function () {
+            if (!$(this).valid()) return;
+            $('#submitBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i>Saving...');
         });
-
     </script>
-
 }
