@@ -19,7 +19,7 @@ public class UserController : Controller
         _notyf = notyf;
     }
 
-    public async Task<IActionResult> Index() => View(await _userService.GetUsersAsync());
+    public async Task<IActionResult> Index() => View(await _userService.GetUsersAsync(User));
 
     [HttpGet]
     public async Task<IActionResult> Create() => View(await _userService.BuildCreateModelAsync());
@@ -46,7 +46,7 @@ public class UserController : Controller
     [HttpGet]
     public async Task<IActionResult> Edit(string id)
     {
-        var model = await _userService.BuildEditModelAsync(id);
+        var model = await _userService.BuildEditModelAsync(id, User);
         if (model == null) return NotFound();
         return View(model);
     }
@@ -58,7 +58,7 @@ public class UserController : Controller
         if (!ModelState.IsValid)
             return View(await MergeEditModelAsync(model));
 
-        var result = await _userService.UpdateAsync(model);
+        var result = await _userService.UpdateAsync(model, User);
         if (!result.Success)
         {
             _notyf.Error(result.ErrorMessage!);
@@ -75,7 +75,7 @@ public class UserController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(string id)
     {
-        var result = await _userService.DeleteAsync(id);
+        var result = await _userService.DeleteAsync(id, User);
         if (!result.Success)
         {
             if (result.ErrorMessage == "User not found") return NotFound();
@@ -99,7 +99,7 @@ public class UserController : Controller
 
     private async Task<EditUserViewModel> MergeEditModelAsync(EditUserViewModel model)
     {
-        var source = await _userService.BuildEditModelAsync(model.Id);
+        var source = await _userService.BuildEditModelAsync(model.Id, User);
         if (source != null)
         {
             model.Roles = source.Roles;

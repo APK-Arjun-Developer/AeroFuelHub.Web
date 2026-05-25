@@ -2,8 +2,7 @@ namespace AeroFuelHub.Web.ViewModels.Dashboard;
 
 public class RoleDashboardViewModel
 {
-    public string Title { get; set; }
-        = string.Empty;
+    public string Title { get; set; } = string.Empty;
 
     public int TotalTransactions { get; set; }
 
@@ -11,7 +10,5 @@ public class RoleDashboardViewModel
 
     public decimal TotalRevenue { get; set; }
 
-    public List<RecentTransactionViewModel>
-        RecentTransactions
-    { get; set; } = [];
+    public List<RecentTransactionViewModel> RecentTransactions { get; set; } = [];
 }

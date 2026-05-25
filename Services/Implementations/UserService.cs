@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using AeroFuelHub.Web.Models.Entities;
 using AeroFuelHub.Web.Repositories.Interfaces;
 using AeroFuelHub.Web.Services.Interfaces;
@@ -17,7 +18,12 @@ public class UserService : IUserService
         _userRepository = userRepository;
     }
 
-    public Task<List<ApplicationUser>> GetUsersAsync() => _userRepository.GetUsersAsync();
+    public Task<List<ApplicationUser>> GetUsersAsync(ClaimsPrincipal principal)
+    {
+        var currentUserId = _userManager.GetUserId(principal)
+            ?? throw new InvalidOperationException("Current user id is not available.");
+        return _userRepository.GetUsersAsync(currentUserId);
+    }
 
     public async Task<CreateUserViewModel> BuildCreateModelAsync() => new()
     {
@@ -51,8 +57,10 @@ public class UserService : IUserService
         return (true, null, null);
     }
 
-    public async Task<EditUserViewModel?> BuildEditModelAsync(string id)
+    public async Task<EditUserViewModel?> BuildEditModelAsync(string id, ClaimsPrincipal principal)
     {
+        if (IsCurrentUser(id, principal)) return null;
+
         var user = await _userManager.FindByIdAsync(id);
         if (user == null) return null;
 
@@ -73,8 +81,13 @@ public class UserService : IUserService
         };
     }
 
-    public async Task<(bool Success, string? ErrorMessage, IEnumerable<string>? Errors)> UpdateAsync(EditUserViewModel model)
+    public async Task<(bool Success, string? ErrorMessage, IEnumerable<string>? Errors)> UpdateAsync(
+        EditUserViewModel model,
+        ClaimsPrincipal principal)
     {
+        if (IsCurrentUser(model.Id, principal))
+            return (false, "Update your profile from the Profile page.", null);
+
         var user = await _userManager.FindByIdAsync(model.Id);
         if (user == null) return (false, "User not found", null);
 
@@ -98,8 +111,11 @@ public class UserService : IUserService
         return (true, null, null);
     }
 
-    public async Task<(bool Success, string? ErrorMessage)> DeleteAsync(string id)
+    public async Task<(bool Success, string? ErrorMessage)> DeleteAsync(string id, ClaimsPrincipal principal)
     {
+        if (IsCurrentUser(id, principal))
+            return (false, "You cannot delete your own account.");
+
         var user = await _userManager.FindByIdAsync(id);
         if (user == null) return (false, "User not found");
         if (user.Email == "admin@aerofuelhub.com") return (false, "Default admin cannot be deleted");
@@ -109,4 +125,7 @@ public class UserService : IUserService
 
         return (true, null);
     }
+
+    private bool IsCurrentUser(string id, ClaimsPrincipal principal) =>
+        _userManager.GetUserId(principal) == id;
 }
