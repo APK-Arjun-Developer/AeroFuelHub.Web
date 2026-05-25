@@ -1,165 +1,110 @@
+@using AeroFuelHub.Web.Constants
 @model AeroFuelHub.Web.ViewModels.User.EditUserViewModel
 
 @{
     ViewData["Title"] = "Edit User";
+    ViewData["Subtitle"] = $"Update account for {Model.FullName}";
 }
 
-<div class="card">
+<div class="mb-3">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+        <i class="fas fa-arrow-left me-1" aria-hidden="true"></i>Back to users
+    </a>
+</div>
 
+<div class="card card-app">
     <div class="card-header">
-
         <h3 class="card-title">
-            Edit User
+            <i class="fas fa-user-pen me-2 text-primary" aria-hidden="true"></i>Edit user
         </h3>
-
     </div>
 
-    <form asp-action="Edit" method="post">
-
+    <form asp-action="Edit" method="post" id="userForm">
         <input type="hidden" asp-for="Id" />
-
         <div class="card-body">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
 
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
-            <div class="row">
-
-                <div class="col-md-6 mb-3">
-
-                    <label asp-for="FullName"></label>
-
-                    <input asp-for="FullName" class="form-control" />
-
-                    <span asp-validation-for="FullName" class="text-danger"></span>
-
+            <div class="form-section">
+                <h4 class="form-section__title">Account details</h4>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="FullName" class="form-label"></label>
+                        <input asp-for="FullName" class="form-control" />
+                        <span asp-validation-for="FullName" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control" autocomplete="username" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
                 </div>
-
-                <div class="col-md-6 mb-3">
-
-                    <label asp-for="Email"></label>
-
-                    <input asp-for="Email" class="form-control" />
-
-                    <span asp-validation-for="Email" class="text-danger"></span>
-
-                </div>
-
-                <div class="col-md-6 mb-3">
-
-                    <label asp-for="Role"></label>
-
-                    <select asp-for="Role" asp-items="Model.Roles" id="roleSelect" class="form-select">
-
-                    </select>
-
-                    <span asp-validation-for="Role" class="text-danger"></span>
-
-                </div>
-
-                <div class="col-md-6 mb-3" id="airlineSection" style="display:none;">
-
-                    <label asp-for="AirlineId"></label>
-
-                    <select asp-for="AirlineId" asp-items="Model.Airlines" class="form-select">
-
-                        <option value="">
-                            Select Airline
-                        </option>
-
-                    </select>
-
-                    <span asp-validation-for="AirlineId" class="text-danger"></span>
-
-                </div>
-
-                <div class="col-md-6 mb-3" id="fuelCompanySection" style="display:none;">
-
-                    <label asp-for="FuelCompanyId"></label>
-
-                    <select asp-for="FuelCompanyId" asp-items="Model.FuelCompanies" class="form-select">
-
-                        <option value="">
-                            Select Fuel Company
-                        </option>
-
-                    </select>
-
-                    <span asp-validation-for="FuelCompanyId" class="text-danger"></span>
-
-                </div>
-
-                <div class="col-md-6 mb-3" id="airportSection" style="display:none;">
-
-                    <label asp-for="AirportId"></label>
-
-                    <select asp-for="AirportId" asp-items="Model.Airports" class="form-select">
-
-                        <option value="">
-                            Select Airport
-                        </option>
-
-                    </select>
-
-                    <span asp-validation-for="AirportId" class="text-danger"></span>
-
-                </div>
-
             </div>
 
+            <div class="form-section mb-0">
+                <h4 class="form-section__title">Role &amp; assignment</h4>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Role" class="form-label"></label>
+                        <select asp-for="Role" asp-items="Model.Roles" id="roleSelect" class="form-select"></select>
+                        <span asp-validation-for="Role" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6" id="airlineSection" style="display:none;">
+                        <label asp-for="AirlineId" class="form-label"></label>
+                        <select asp-for="AirlineId" asp-items="Model.Airlines" class="form-select">
+                            <option value="">Select airline</option>
+                        </select>
+                        <span asp-validation-for="AirlineId" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6" id="fuelCompanySection" style="display:none;">
+                        <label asp-for="FuelCompanyId" class="form-label"></label>
+                        <select asp-for="FuelCompanyId" asp-items="Model.FuelCompanies" class="form-select">
+                            <option value="">Select fuel company</option>
+                        </select>
+                        <span asp-validation-for="FuelCompanyId" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6" id="airportSection" style="display:none;">
+                        <label asp-for="AirportId" class="form-label"></label>
+                        <select asp-for="AirportId" asp-items="Model.Airports" class="form-select">
+                            <option value="">Select airport</option>
+                        </select>
+                        <span asp-validation-for="AirportId" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="card-footer">
-
-            <button type="submit" class="btn btn-primary">
-
-                Update User
-
+        <div class="card-footer bg-transparent border-top d-flex flex-wrap gap-2 justify-content-between align-items-center">
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary" id="submitBtn">
+                <i class="fas fa-check me-1" aria-hidden="true"></i>Update user
             </button>
-
         </div>
-
     </form>
-
 </div>
 
 @section Scripts {
-
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
     <script>
+        const Roles = {
+            AirlineExecutive: '@Roles.AirlineExecutive',
+            FuelSupplyExecutive: '@Roles.FuelSupplyExecutive',
+            FuelCoordinator: '@Roles.FuelCoordinator'
+        };
 
-        function toggleSections() {
-
-            let role = $('#roleSelect').val();
-
-            $('#airlineSection').hide();
-
-            $('#fuelCompanySection').hide();
-
-            $('#airportSection').hide();
-
-            if (role === 'AirlineExecutive') {
-
-                $('#airlineSection').show();
-            }
-
-            if (role === 'FuelSupplyExecutive') {
-
-                $('#fuelCompanySection').show();
-            }
-
-            if (role === 'FuelCoordinator') {
-
-                $('#airportSection').show();
-            }
+        function toggleRoleSections() {
+            const role = $('#roleSelect').val();
+            $('#airlineSection, #fuelCompanySection, #airportSection').hide();
+            if (role === Roles.AirlineExecutive) $('#airlineSection').show();
+            if (role === Roles.FuelSupplyExecutive) $('#fuelCompanySection').show();
+            if (role === Roles.FuelCoordinator) $('#airportSection').show();
         }
 
-        $('#roleSelect').change(toggleSections);
+        $('#roleSelect').on('change', toggleRoleSections);
+        toggleRoleSections();
 
-        toggleSections();
-
+        $('#userForm').on('submit', function () {
+            if (!$(this).valid()) return;
+            $('#submitBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i>Updating...');
+        });
     </script>
-
 }

@@ -1,207 +1,155 @@
+@using AeroFuelHub.Web.Constants
 @model AeroFuelHub.Web.ViewModels.FuelTransaction.CreateFuelTransactionViewModel
 
 @{
     ViewData["Title"] = "Create Fuel Entry";
+    ViewData["Subtitle"] = "Record a new aviation fuel transaction";
 }
 
-<div class="card">
-
+<div class="card card-app">
     <div class="card-header">
         <h3 class="card-title">
-            Create Fuel Transaction
+            <i class="fas fa-gas-pump me-2 text-primary" aria-hidden="true"></i>New fuel transaction
         </h3>
     </div>
 
     <form asp-action="Create" method="post" id="createFuelTransactionForm">
-
         <div class="card-body">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
 
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <div class="form-section">
+                <h4 class="form-section__title">Flight &amp; parties</h4>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="AirlineId" class="form-label"></label>
+                        <select asp-for="AirlineId" asp-items="Model.Airlines" id="AirlineId" class="form-select"
+                                disabled="@(Model.IsAirlineLocked ? "disabled" : null)">
+                            <option value="">Select airline</option>
+                        </select>
+                        @if (Model.IsAirlineLocked)
+                        {
+                            <input type="hidden" asp-for="AirlineId" />
+                        }
+                        <span asp-validation-for="AirlineId" class="text-danger"></span>
+                    </div>
 
-            <div class="row">
+                    <div class="col-md-6">
+                        <label asp-for="AircraftId" class="form-label"></label>
+                        <select asp-for="AircraftId" id="AircraftId" class="form-select">
+                            <option value="">Select aircraft</option>
+                            @foreach (var aircraft in Model.AircraftOptions)
+                            {
+                                if (Model.AircraftId == aircraft.Id)
+                                {
+                                    <option value="@aircraft.Id" data-airline-id="@aircraft.AirlineId" selected="selected">@aircraft.Label</option>
+                                }
+                                else
+                                {
+                                    <option value="@aircraft.Id" data-airline-id="@aircraft.AirlineId">@aircraft.Label</option>
+                                }
+                            }
+                        </select>
+                        <span asp-validation-for="AircraftId" class="text-danger"></span>
+                    </div>
 
-                <div class="col-md-6 mb-3">
-
-                    <label asp-for="AirlineId"></label>
-
-                    <select asp-for="AirlineId" asp-items="Model.Airlines" id="AirlineId" class="form-select"
-                        disabled="@(Model.IsAirlineLocked ? "disabled" : null)">
-
-                        <option value="">Select Airline</option>
-
-                    </select>
-
-                    @if (Model.IsAirlineLocked)
+                    @if (User.IsInRole(Roles.Admin))
                     {
-                        <input type="hidden" asp-for="AirlineId" />
+                        <div class="col-md-6">
+                            <label asp-for="AirportId" class="form-label"></label>
+                            <select asp-for="AirportId" asp-items="Model.Airports" class="form-select">
+                                <option value="">Select airport</option>
+                            </select>
+                            <span asp-validation-for="AirportId" class="text-danger"></span>
+                        </div>
                     }
 
-                    <span asp-validation-for="AirlineId" class="text-danger"></span>
-
-                </div>
-
-                <div class="col-md-6 mb-3">
-
-                    <label asp-for="AircraftId"></label>
-
-                    <select asp-for="AircraftId" id="AircraftId" class="form-select">
-
-                        <option value="">Select Aircraft</option>
-
-                        @foreach (var aircraft in Model.AircraftOptions)
-                        {
-                            if (Model.AircraftId == aircraft.Id)
-                            {
-                                <option value="@aircraft.Id" data-airline-id="@aircraft.AirlineId" selected="selected">
-                                    @aircraft.Label</option>
-                            }
-                            else
-                            {
-                                <option value="@aircraft.Id" data-airline-id="@aircraft.AirlineId">@aircraft.Label</option>
-                            }
-                        }
-
-                    </select>
-
-                    <span asp-validation-for="AircraftId" class="text-danger"></span>
-
-                </div>
-
-                @if (User.IsInRole("Admin"))
-                {
-                    <div class="col-md-6 mb-3">
-
-                        <label asp-for="AirportId"></label>
-
-                        <select asp-for="AirportId" asp-items="Model.Airports" class="form-select">
-
-                            <option value="">
-                                Select Airport
-                            </option>
-
+                    <div class="col-md-6">
+                        <label asp-for="FuelCompanyId" class="form-label"></label>
+                        <select asp-for="FuelCompanyId" asp-items="Model.FuelCompanies" class="form-select">
+                            <option value="">Select fuel company</option>
                         </select>
-
-                        <span asp-validation-for="AirportId" class="text-danger"></span>
-
+                        <span asp-validation-for="FuelCompanyId" class="text-danger"></span>
                     </div>
-                }
 
-                <div class="col-md-6 mb-3">
-
-                    <label asp-for="FuelCompanyId"></label>
-
-                    <select asp-for="FuelCompanyId" asp-items="Model.FuelCompanies" class="form-select">
-
-                        <option value="">
-                            Select Fuel Company
-                        </option>
-
-                    </select>
-
-                    <span asp-validation-for="FuelCompanyId" class="text-danger"></span>
-
+                    <div class="col-md-6">
+                        <label asp-for="FlightNumber" class="form-label"></label>
+                        <input asp-for="FlightNumber" class="form-control" placeholder="e.g. AI-101" />
+                        <span asp-validation-for="FlightNumber" class="text-danger"></span>
+                    </div>
                 </div>
-
-                <div class="col-md-6 mb-3">
-
-                    <label asp-for="FlightNumber"></label>
-
-                    <input asp-for="FlightNumber" class="form-control" />
-
-                    <span asp-validation-for="FlightNumber" class="text-danger"></span>
-
-                </div>
-
-                <div class="col-md-6 mb-3">
-
-                    <label asp-for="FuelQuantity"></label>
-
-                    <input asp-for="FuelQuantity" id="fuelQuantity" class="form-control" />
-
-                    <span asp-validation-for="FuelQuantity" class="text-danger"></span>
-
-                </div>
-
-                <div class="col-md-6 mb-3">
-
-                    <label asp-for="PricePerLiter"></label>
-
-                    <input asp-for="PricePerLiter" id="pricePerLiter" class="form-control" />
-
-                    <span asp-validation-for="PricePerLiter" class="text-danger"></span>
-
-                </div>
-
-                <div class="col-md-6 mb-3">
-
-                    <label asp-for="TotalAmount"></label>
-
-                    <input asp-for="TotalAmount" id="totalAmount" class="form-control" readonly tabindex="-1" />
-
-                </div>
-
-                <div class="col-md-12 mb-3">
-
-                    <label asp-for="Remarks"></label>
-
-                    <textarea asp-for="Remarks" class="form-control"></textarea>
-
-                    <span asp-validation-for="Remarks" class="text-danger"></span>
-
-                </div>
-
             </div>
 
+            <div class="form-section">
+                <h4 class="form-section__title">Fuel &amp; pricing</h4>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label asp-for="FuelQuantity" class="form-label"></label>
+                        <div class="input-group">
+                            <input asp-for="FuelQuantity" id="fuelQuantity" class="form-control" placeholder="0" />
+                            <span class="input-group-text">L</span>
+                        </div>
+                        <span asp-validation-for="FuelQuantity" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="PricePerLiter" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text">₹</span>
+                            <input asp-for="PricePerLiter" id="pricePerLiter" class="form-control" placeholder="0.00" />
+                        </div>
+                        <span asp-validation-for="PricePerLiter" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="TotalAmount" class="form-label"></label>
+                        <div class="total-amount-display">
+                            <span class="total-amount-display__currency">₹</span>
+                            <input asp-for="TotalAmount" id="totalAmount" class="form-control total-amount-display__input" readonly tabindex="-1" />
+                        </div>
+                        <small class="text-muted">Calculated automatically from quantity × price</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section mb-0">
+                <h4 class="form-section__title">Additional details</h4>
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label asp-for="Remarks" class="form-label"></label>
+                        <textarea asp-for="Remarks" class="form-control" rows="3" placeholder="Optional notes about this transaction"></textarea>
+                        <span asp-validation-for="Remarks" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="card-footer">
-
+        <div class="card-footer bg-transparent border-top d-flex flex-wrap gap-2 justify-content-between align-items-center">
+            <a asp-controller="FuelTransaction" asp-action="History" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1" aria-hidden="true"></i>Cancel
+            </a>
             <button type="submit" id="submitBtn" class="btn btn-primary">
-
-                Save Transaction
-
+                <i class="fas fa-check me-1" aria-hidden="true"></i>Save transaction
             </button>
-
         </div>
-
     </form>
-
 </div>
 
 @section Scripts {
-
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
     <script>
-
         function calculateTotal() {
-
-            let quantity =
-                parseFloat(
-                    $('#fuelQuantity').val()) || 0;
-
-            let price =
-                parseFloat(
-                    $('#pricePerLiter').val()) || 0;
-
-            let total = quantity * price;
-
-            $('#totalAmount')
-                .val(total.toFixed(2));
+            const quantity = parseFloat($('#fuelQuantity').val()) || 0;
+            const price = parseFloat($('#pricePerLiter').val()) || 0;
+            $('#totalAmount').val((quantity * price).toFixed(2));
         }
 
-        $('#fuelQuantity')
-            .on('keyup change', calculateTotal);
-
-        $('#pricePerLiter')
-            .on('keyup change', calculateTotal);
+        $('#fuelQuantity, #pricePerLiter').on('keyup change', calculateTotal);
 
         function filterAircraftByAirline() {
             const airlineId = $('#AirlineId').val();
             const $aircraft = $('#AircraftId');
-            const selected = $aircraft.val();
 
             $aircraft.find('option').each(function () {
                 const $option = $(this);
@@ -220,15 +168,13 @@
 
         $('#AirlineId').on('change', filterAircraftByAirline);
         filterAircraftByAirline();
+        calculateTotal();
 
         $('#createFuelTransactionForm').on('submit', function () {
             if (!$(this).valid()) {
                 return;
             }
-
-            $('#submitBtn').prop('disabled', true).text('Saving...');
+            $('#submitBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i>Saving...');
         });
-
     </script>
-
 }

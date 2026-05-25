@@ -1,11 +1,30 @@
-<div class="text-center mt-5">
+@{
+    ViewData["Title"] = "Error";
+    ViewData["Subtitle"] = "Something unexpected happened";
+    Layout = "_Layout";
+}
 
-    <h1 class="text-danger">
-        Something went wrong
-    </h1>
+@section Styles {
+    <link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
+}
 
-    <p>
-        Please try again later.
-    </p>
-
+<div class="status-page">
+    <div class="status-card">
+        <div class="status-icon status-icon--danger" aria-hidden="true">
+            <i class="fas fa-triangle-exclamation"></i>
+        </div>
+        <h2>Something went wrong</h2>
+        <p>
+            We couldn't complete your request. Please try again later or return to your dashboard.
+            If the problem continues, contact your system administrator.
+        </p>
+        <div class="status-actions">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+                <i class="fas fa-home me-2" aria-hidden="true"></i>Go to home
+            </a>
+            <button type="button" class="btn btn-outline-secondary" onclick="history.back()">
+                <i class="fas fa-arrow-left me-2" aria-hidden="true"></i>Go back
+            </button>
+        </div>
+    </div>
 </div>

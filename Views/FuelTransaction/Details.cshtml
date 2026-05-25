@@ -1,76 +1,104 @@
 @model AeroFuelHub.Web.ViewModels.FuelTransaction.FuelTransactionDetailsViewModel
 
 @{
-    ViewData["Title"] = "Transaction Details";
+    ViewData["Title"] = Model.TransactionNumber;
+    ViewData["Subtitle"] = "Fuel transaction details";
+    var statusClass = Model.Status?.ToLowerInvariant() switch
+    {
+        "completed" or "approved" => "status-badge--success",
+        "pending" => "status-badge--warning",
+        "cancelled" or "rejected" => "status-badge--danger",
+        _ => "status-badge--neutral"
+    };
 }
 
-<div class="card">
+<div class="mb-3">
+    <a asp-action="History" class="btn btn-outline-secondary btn-sm">
+        <i class="fas fa-arrow-left me-1" aria-hidden="true"></i>Back to transactions
+    </a>
+</div>
 
-    <div class="card-header">
-
-        <h3 class="card-title">Fuel Transaction Details</h3>
-
-        <div class="float-end">
-            <a asp-action="Invoice" asp-route-id="@Model.Id" class="btn btn-success">Generate Invoice</a>
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="card card-app">
+            <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <h3 class="card-title mb-0">
+                    <i class="fas fa-receipt me-2 text-primary" aria-hidden="true"></i>Transaction information
+                </h3>
+                <span class="status-badge @statusClass">@Model.Status</span>
+            </div>
+            <div class="card-body">
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <span class="detail-item__label">Transaction number</span>
+                        <span class="detail-item__value">@Model.TransactionNumber</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-item__label">Transaction date</span>
+                        <span class="detail-item__value">@Model.TransactionDate.ToString("dd MMM yyyy, HH:mm")</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-item__label">Airline</span>
+                        <span class="detail-item__value">@Model.AirlineName</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-item__label">Aircraft</span>
+                        <span class="detail-item__value">@Model.AircraftModel</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-item__label">Airport</span>
+                        <span class="detail-item__value">@Model.AirportName</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-item__label">Fuel company</span>
+                        <span class="detail-item__value">@Model.FuelCompanyName</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-item__label">Flight number</span>
+                        <span class="detail-item__value">@Model.FlightNumber</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-item__label">Fuel quantity</span>
+                        <span class="detail-item__value">@Model.FuelQuantity.ToString("N2") L</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-item__label">Price per liter</span>
+                        <span class="detail-item__value">₹@Model.PricePerLiter.ToString("N2")</span>
+                    </div>
+                    <div class="detail-item detail-item--full">
+                        <span class="detail-item__label">Remarks</span>
+                        <span class="detail-item__value">@(string.IsNullOrWhiteSpace(Model.Remarks) ? "—" : Model.Remarks)</span>
+                    </div>
+                </div>
+            </div>
         </div>
-
     </div>
 
-    <div class="card-body">
-
-        <div class="table-responsive">
-            <table class="table table-bordered">
-                <tr>
-                    <th>Transaction Number</th>
-                    <td>@Model.TransactionNumber</td>
-                </tr>
-                <tr>
-                    <th>Airline</th>
-                    <td>@Model.AirlineName</td>
-                </tr>
-                <tr>
-                    <th>Aircraft</th>
-                    <td>@Model.AircraftModel</td>
-                </tr>
-                <tr>
-                    <th>Airport</th>
-                    <td>@Model.AirportName</td>
-                </tr>
-                <tr>
-                    <th>Fuel Company</th>
-                    <td>@Model.FuelCompanyName</td>
-                </tr>
-                <tr>
-                    <th>Flight Number</th>
-                    <td>@Model.FlightNumber</td>
-                </tr>
-                <tr>
-                    <th>Fuel Quantity</th>
-                    <td>@Model.FuelQuantity.ToString("N2") L</td>
-                </tr>
-                <tr>
-                    <th>Price Per Liter</th>
-                    <td>₹ @Model.PricePerLiter.ToString("N2")</td>
-                </tr>
-                <tr>
-                    <th>Total Amount</th>
-                    <td>₹ @Model.TotalAmount.ToString("N2")</td>
-                </tr>
-                <tr>
-                    <th>Status</th>
-                    <td>@Model.Status</td>
-                </tr>
-                <tr>
-                    <th>Transaction Date</th>
-                    <td>@Model.TransactionDate.ToString("dd MMM yyyy HH:mm")</td>
-                </tr>
-                <tr>
-                    <th>Remarks</th>
-                    <td>@(string.IsNullOrWhiteSpace(Model.Remarks) ? "—" : Model.Remarks)</td>
-                </tr>
-            </table>
+    <div class="col-lg-4">
+        <div class="card card-app summary-card">
+            <div class="card-header">
+                <h3 class="card-title">Amount summary</h3>
+            </div>
+            <div class="card-body">
+                <div class="summary-card__row">
+                    <span>Quantity</span>
+                    <strong>@Model.FuelQuantity.ToString("N2") L</strong>
+                </div>
+                <div class="summary-card__row">
+                    <span>Rate</span>
+                    <strong>₹@Model.PricePerLiter.ToString("N2") / L</strong>
+                </div>
+                <hr />
+                <div class="summary-card__total">
+                    <span>Total amount</span>
+                    <strong>₹@Model.TotalAmount.ToString("N2")</strong>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-top d-grid gap-2">
+                <a asp-action="Invoice" asp-route-id="@Model.Id" class="btn btn-success">
+                    <i class="fas fa-file-pdf me-1" aria-hidden="true"></i>Generate invoice
+                </a>
+            </div>
         </div>
-
     </div>
-
 </div>

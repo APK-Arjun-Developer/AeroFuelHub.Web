@@ -1,111 +1,104 @@
+@using AeroFuelHub.Web.Constants
 @using Microsoft.AspNetCore.Identity
-
 @model IEnumerable<AeroFuelHub.Web.Models.Entities.ApplicationUser>
-
 @inject UserManager<AeroFuelHub.Web.Models.Entities.ApplicationUser> UserManager
 
 @{
     ViewData["Title"] = "Users";
+    ViewData["Subtitle"] = "Manage system users and role assignments";
+    var users = Model.ToList();
+
+    string RoleBadgeClass(string role) => role switch
+    {
+        Roles.Admin => "status-badge--danger",
+        Roles.AirlineExecutive => "status-badge--info",
+        Roles.FuelSupplyExecutive => "status-badge--success",
+        Roles.FuelCoordinator => "status-badge--warning",
+        _ => "status-badge--neutral"
+    };
 }
 
-<div class="card">
-
-    <div class="card-header">
-
-        <a asp-action="Create" class="btn btn-primary">
-
-            Create User
-
+<div class="card card-app">
+    <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <h3 class="card-title mb-0">
+            <i class="fas fa-users me-2 text-primary" aria-hidden="true"></i>All users
+        </h3>
+        <a asp-action="Create" class="btn btn-primary btn-sm">
+            <i class="fas fa-user-plus me-1" aria-hidden="true"></i>Create user
         </a>
-
     </div>
-
-    <div class="card-body">
-
-        <div class="table-responsive">
-
-        <table id="userTable" class="table table-bordered table-striped">
-
-            <thead>
-
-                <tr>
-
-                    <th>Full Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Created At</th>
-                    <th>Action</th>
-
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-                @foreach (var item in Model)
-                {
-                    var roles =
-                    await UserManager.GetRolesAsync(item);
-
-                    <tr>
-
-                        <td>@item.FullName</td>
-
-                        <td>@item.Email</td>
-
-                        <td>
-                            @string.Join(", ", roles)
-                        </td>
-
-                        <td>@item.CreatedAt</td>
-
-                        <td>
-
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">
-
-                                Edit
-
-                            </a>
-
-                            <form asp-action="Delete" method="post" class="d-inline">
-
-                                <input type="hidden" name="id" value="@item.Id" />
-
-                                <button class="btn btn-danger btn-sm" onclick="return confirm('Delete user?')">
-
-                                    Delete
-
-                                </button>
-
-                            </form>
-
-                        </td>
-
-                    </tr>
-                }
-
-            </tbody>
-
-        </table>
-
-        </div>
-
+    <div class="card-body @(users.Any() ? "" : "p-0")">
+        @if (!users.Any())
+        {
+            <div class="recent-txn-empty">
+                <i class="fas fa-users fa-2x mb-2 d-block opacity-50" aria-hidden="true"></i>
+                No users found
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table id="userTable" class="table table-app table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Full name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Created</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in users)
+                        {
+                            var roles = await UserManager.GetRolesAsync(item);
+                            <tr>
+                                <td class="fw-semibold">@item.FullName</td>
+                                <td>@item.Email</td>
+                                <td>
+                                    @foreach (var role in roles)
+                                    {
+                                        <span class="status-badge @RoleBadgeClass(role) me-1">@role</span>
+                                    }
+                                </td>
+                                <td class="text-muted">@item.CreatedAt.ToString("dd MMM yyyy")</td>
+                                <td class="text-end text-nowrap">
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="Edit user">
+                                        <i class="fas fa-pen" aria-hidden="true"></i>
+                                    </a>
+                                    <form asp-action="Delete" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete user"
+                                                onclick="return confirm('Delete this user?');">
+                                            <i class="fas fa-trash" aria-hidden="true"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
     </div>
-
 </div>
 
-@section Scripts {
-
+@section Styles {
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css" />
+}
 
+@section Scripts {
     <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
-
     <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
-
-    <script>
-
-        $('#userTable').DataTable();
-
-    </script>
-
+    @if (users.Any())
+    {
+        <script>
+            $('#userTable').DataTable({
+                order: [[3, 'desc']],
+                pageLength: 10,
+                language: { search: '', searchPlaceholder: 'Search users...' }
+            });
+        </script>
+    }
 }

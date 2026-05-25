@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 
 <body id="bodyElement" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
@@ -29,18 +30,23 @@
                 </li>
             </ul>
 
-            <ul class="navbar-nav ms-auto">
+            <ul class="navbar-nav ms-auto align-items-center">
 
                 @if (User.Identity!.IsAuthenticated)
                 {
+                    var displayName = User.Identity!.Name ?? "User";
+                    var initial = displayName.Length > 0 ? char.ToUpper(displayName[0]) : 'U';
                     <li class="nav-item">
                         <div class="dropdown">
-                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
-                                @User.Identity!.Name
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown"
+                                href="#">
+                                <span class="user-avatar" aria-hidden="true">@initial</span>
+                                <span class="d-none d-md-inline">@displayName</span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-end">
                                 <a class="dropdown-item" asp-controller="Profile" asp-action="Index">My Profile</a>
-                                <a class="dropdown-item" asp-controller="Profile" asp-action="ChangePassword">Change Password</a>
+                                <a class="dropdown-item" asp-controller="Profile" asp-action="ChangePassword">Change
+                                    Password</a>
                                 <div class="dropdown-divider"></div>
                                 <form asp-controller="Account" asp-action="Logout" method="post" class="px-0">
                                     <button type="submit" class="dropdown-item">Logout</button>
@@ -49,7 +55,8 @@
                         </div>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#" id="darkModeToggle" title="Switch to dark mode" aria-label="Switch to dark mode">
+                        <a class="nav-link" href="#" id="darkModeToggle" title="Switch to dark mode"
+                            aria-label="Switch to dark mode">
                             <i class="fas fa-moon" id="darkModeIcon"></i>
                         </a>
                     </li>
@@ -65,9 +72,13 @@
 
             <section class="content-header">
                 <div class="container-fluid">
-                    <div class="row mb-2">
-                        <div class="col-sm-6">
-                            <h1>@ViewData["Title"]</h1>
+                    <div class="row mb-3">
+                        <div class="col-sm-8">
+                            <h1 class="page-title">@ViewData["Title"]</h1>
+                            @if (ViewData["Subtitle"] is string subtitle && !string.IsNullOrWhiteSpace(subtitle))
+                            {
+                                <p class="page-subtitle">@subtitle</p>
+                            }
                         </div>
                     </div>
                 </div>
@@ -82,7 +93,8 @@
         </div>
 
         <footer class="main-footer">
-            <strong>AeroFuel Hub</strong>
+            <strong>AeroFuel Hub</strong> &mdash; Aviation fuel management
+            <span class="float-end d-none d-sm-inline">@DateTime.UtcNow.Year</span>
         </footer>
 
     </div>

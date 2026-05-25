@@ -63,6 +63,7 @@ public class DashboardService : IDashboardService
     private static async Task<List<RecentTransactionViewModel>> BuildRecentTransactionsAsync(IQueryable<Models.Entities.FuelTransaction> query, int take)
         => await query.OrderByDescending(x => x.TransactionDate).Take(take).Select(x => new RecentTransactionViewModel
         {
+            Id = x.Id,
             TransactionNumber = x.TransactionNumber,
             Airline = x.Airline!.Name,
             TotalAmount = x.TotalAmount,
