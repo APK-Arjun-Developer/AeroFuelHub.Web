@@ -15,8 +15,11 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    public Task<List<ApplicationUser>> GetUsersAsync() =>
-        _context.Users.AsNoTracking().OrderByDescending(x => x.CreatedAt).ToListAsync();
+    public Task<List<ApplicationUser>> GetUsersAsync(string excludeUserId) =>
+        _context.Users.AsNoTracking()
+            .Where(x => x.Id != excludeUserId)
+            .OrderByDescending(x => x.CreatedAt)
+            .ToListAsync();
 
     public Task<List<SelectListItem>> GetRolesAsync() =>
         _context.Roles.AsNoTracking().Select(x => new SelectListItem { Value = x.Name!, Text = x.Name! }).ToListAsync();
