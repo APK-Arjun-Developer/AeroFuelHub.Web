@@ -10,10 +10,6 @@ html {
   }
 }
 
-body {
-  margin-bottom: 60px;
-}
-
 .btn:focus:not(:disabled),
 .btn:active:focus:not(:disabled),
 .btn-link.nav-link:focus,
@@ -431,13 +427,13 @@ body.dark-mode .main-sidebar .nav-sidebar .nav-link.active .nav-icon {
   box-shadow: var(--afh-shadow-sm);
 }
 
-.card-app > .card-header {
+.card-app>.card-header {
   background: var(--afh-surface);
   border-bottom: 1px solid var(--afh-border);
   padding: 1rem 1.25rem;
 }
 
-.card-app > .card-header .card-title {
+.card-app>.card-header .card-title {
   font-size: 1rem;
   font-weight: 600;
   color: #0f172a;
@@ -986,7 +982,7 @@ body.dark-mode .main-sidebar .nav-sidebar .nav-link.active .nav-icon {
   border-color: #454d55;
 }
 
-.dark-mode .card-app > .card-header .card-title {
+.dark-mode .card-app>.card-header .card-title {
   color: #fff;
 }
 
