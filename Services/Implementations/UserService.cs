@@ -101,12 +101,17 @@ public class UserService : IUserService
         user.FuelCompanyId = model.FuelCompanyId;
         user.AirportId = model.AirportId;
 
-        var existingRoles = await _userManager.GetRolesAsync(user);
-        await _userManager.RemoveFromRolesAsync(user, existingRoles);
-        await _userManager.AddToRoleAsync(user, model.Role);
-
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded) return (false, "Failed to update user", result.Errors.Select(x => x.Description));
+
+        var existingRoles = await _userManager.GetRolesAsync(user);
+        var removeRolesResult = await _userManager.RemoveFromRolesAsync(user, existingRoles);
+        if (!removeRolesResult.Succeeded)
+            return (false, "Failed to update user role", removeRolesResult.Errors.Select(x => x.Description));
+
+        var addRoleResult = await _userManager.AddToRoleAsync(user, model.Role);
+        if (!addRoleResult.Succeeded)
+            return (false, "Failed to update user role", addRoleResult.Errors.Select(x => x.Description));
 
         return (true, null, null);
     }

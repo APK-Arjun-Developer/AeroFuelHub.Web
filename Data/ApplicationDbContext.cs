@@ -20,6 +20,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     {
         base.OnModelCreating(builder);
 
+        builder.Entity<FuelTransaction>()
+            .HasQueryFilter(x => !x.IsDeleted);
+
         builder.Entity<Airline>()
             .Property(x => x.Name)
             .HasMaxLength(200)
@@ -48,6 +51,22 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         builder.Entity<FuelTransaction>()
             .Property(x => x.FuelQuantity)
             .HasColumnType("decimal(18,2)");
+
+        builder.Entity<FuelTransaction>()
+            .HasIndex(x => x.TransactionNumber)
+            .IsUnique();
+
+        builder.Entity<FuelTransaction>()
+            .HasIndex(x => x.TransactionDate);
+
+        builder.Entity<FuelTransaction>()
+            .HasIndex(x => x.AirlineId);
+
+        builder.Entity<FuelTransaction>()
+            .HasIndex(x => x.AirportId);
+
+        builder.Entity<FuelTransaction>()
+            .HasIndex(x => x.FuelCompanyId);
 
         builder.Entity<FuelTransaction>()
             .HasOne(x => x.Airline)

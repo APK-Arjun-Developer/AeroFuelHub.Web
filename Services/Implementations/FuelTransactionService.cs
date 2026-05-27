@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Globalization;
 using AeroFuelHub.Web.Constants;
 using AeroFuelHub.Web.Enums;
 using AeroFuelHub.Web.Models.Entities;
@@ -84,27 +85,40 @@ public class FuelTransactionService : IFuelTransactionService
         if (!await _fuelTransactionRepository.AircraftBelongsToAirlineAsync(model.AircraftId, model.AirlineId))
             return (false, "AircraftId", "Selected aircraft does not belong to the selected airline");
 
-        var transaction = new FuelTransaction
+        for (var attempt = 0; attempt < 3; attempt++)
         {
-            TransactionNumber = GenerateTransactionNumber(),
-            TransactionDate = DateTime.UtcNow,
-            AirlineId = model.AirlineId,
-            AircraftId = model.AircraftId,
-            AirportId = model.AirportId.Value,
-            FuelCompanyId = model.FuelCompanyId,
-            FlightNumber = model.FlightNumber,
-            FuelQuantity = model.FuelQuantity,
-            PricePerLiter = model.PricePerLiter,
-            TotalAmount = model.FuelQuantity * model.PricePerLiter,
-            Remarks = model.Remarks,
-            Status = FuelTransactionStatus.Completed,
-            CreatedAt = DateTime.UtcNow,
-            CreatedBy = user.Identity?.Name
-        };
+            var transaction = new FuelTransaction
+            {
+                TransactionNumber = GenerateTransactionNumber(),
+                TransactionDate = DateTime.UtcNow,
+                AirlineId = model.AirlineId,
+                AircraftId = model.AircraftId,
+                AirportId = model.AirportId.Value,
+                FuelCompanyId = model.FuelCompanyId,
+                FlightNumber = model.FlightNumber,
+                FuelQuantity = model.FuelQuantity,
+                PricePerLiter = model.PricePerLiter,
+                TotalAmount = model.FuelQuantity * model.PricePerLiter,
+                Remarks = model.Remarks,
+                Status = FuelTransactionStatus.Completed,
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = user.Identity?.Name
+            };
 
-        await _fuelTransactionRepository.AddTransactionAsync(transaction);
-        await _fuelTransactionRepository.SaveChangesAsync();
-        return (true, null, null);
+            try
+            {
+                await _fuelTransactionRepository.AddTransactionAsync(transaction);
+                await _fuelTransactionRepository.SaveChangesAsync();
+                return (true, null, null);
+            }
+            catch (DbUpdateException)
+            {
+                if (attempt == 2)
+                    return (false, "", "Could not generate a unique transaction number. Please try again.");
+            }
+        }
+
+        return (false, "", "Failed to create transaction.");
     }
 
     public async Task<FuelTransactionHistoryViewModel> GetHistoryAsync(string? search, int page, ClaimsPrincipal user)
@@ -236,7 +250,8 @@ public class FuelTransactionService : IFuelTransactionService
 
     private static string GenerateTransactionNumber()
     {
-        var random = new Random();
-        return $"FT-{DateTime.Now:yyyyMMdd}-{random.Next(1000, 9999)}";
+        var timestamp = DateTime.UtcNow.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+        var suffix = Guid.NewGuid().ToString("N")[..6].ToUpperInvariant();
+        return $"FT-{timestamp}-{suffix}";
     }
 }
