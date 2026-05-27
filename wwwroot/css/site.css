@@ -374,6 +374,14 @@ body.dark-mode .main-sidebar .nav-sidebar .nav-link.active .nav-icon {
   color: #fff !important;
 }
 
+.main-sidebar .nav-treeview>.nav-item>.nav-link {
+  padding-left: 1.75rem;
+}
+
+.main-sidebar .nav-treeview>.nav-item>.nav-link>p {
+  margin: 0;
+}
+
 .main-header {
   border-bottom: 1px solid var(--afh-border) !important;
   box-shadow: var(--afh-shadow-sm);

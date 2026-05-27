@@ -1,0 +1,66 @@
+@model List<AeroFuelHub.Web.Models.Entities.Aircraft>
+
+@{
+    ViewData["Title"] = "Aircraft";
+    ViewData["Subtitle"] = "Manage aircraft linked to airlines";
+}
+
+<div class="card card-app">
+    <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <h3 class="card-title mb-0">
+            <i class="fas fa-plane me-2 text-primary" aria-hidden="true"></i>Aircraft
+        </h3>
+        <a asp-action="Create" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus-circle me-1" aria-hidden="true"></i>Add aircraft
+        </a>
+    </div>
+
+    <div class="card-body @(Model.Any() ? "" : "p-0")">
+        @if (!Model.Any())
+        {
+            <div class="recent-txn-empty">
+                <i class="fas fa-inbox fa-2x mb-2 d-block opacity-50" aria-hidden="true"></i>
+                No aircraft found
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-app table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Airline</th>
+                            <th>Model</th>
+                            <th>Code</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="text-muted">@item.Airline?.Name</td>
+                                <td class="fw-semibold">@item.Model</td>
+                                <td class="text-muted">@item.AircraftCode</td>
+                                <td class="text-end text-nowrap">
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="Edit aircraft">
+                                        <i class="fas fa-pen" aria-hidden="true"></i>
+                                    </a>
+                                    <form asp-action="Delete" method="post" class="d-inline"
+                                          data-confirm="Delete this aircraft? This action cannot be undone.">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete aircraft">
+                                            <i class="fas fa-trash" aria-hidden="true"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+

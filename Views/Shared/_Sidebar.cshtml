@@ -5,6 +5,8 @@
 
     bool IsActive(string controller, params string[] actions) =>
     currentController == controller && actions.Contains(currentAction);
+
+    var isAdministrationOpen = currentController is "User" or "Airlines" or "Aircrafts" or "FuelCompanies" or "Airports";
 }
 
 <aside class="main-sidebar sidebar-light-primary elevation-4">
@@ -40,13 +42,6 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a asp-controller="User" asp-action="Index"
-                            class="nav-link @(IsActive("User", "Index", "Create", "Edit") ? "active" : "")">
-                            <i class="nav-icon fas fa-users"></i>
-                            <p>Users</p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a asp-controller="FuelTransaction" asp-action="History"
                             class="nav-link @(IsActive("FuelTransaction", "History", "Details") ? "active" : "")">
                             <i class="nav-icon fas fa-gas-pump"></i>
@@ -59,6 +54,48 @@
                             <i class="nav-icon fas fa-chart-bar"></i>
                             <p>Reports</p>
                         </a>
+                    </li>
+
+                    <li class="nav-item @(isAdministrationOpen ? "menu-open" : "")">
+                        <a href="#" class="nav-link @(isAdministrationOpen ? "active" : "")">
+                            <i class="nav-icon fas fa-user-shield"></i>
+                            <p>
+                                Administration
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a asp-controller="User" asp-action="Index"
+                                   class="nav-link @(IsActive("User", "Index", "Create", "Edit") ? "active" : "")">
+                                    <p>Users</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-controller="Airlines" asp-action="Index"
+                                   class="nav-link @(IsActive("Airlines", "Index", "Create", "Edit") ? "active" : "")">
+                                    <p>Airlines</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-controller="Aircrafts" asp-action="Index"
+                                   class="nav-link @(IsActive("Aircrafts", "Index", "Create", "Edit") ? "active" : "")">
+                                    <p>Aircraft</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-controller="FuelCompanies" asp-action="Index"
+                                   class="nav-link @(IsActive("FuelCompanies", "Index", "Create", "Edit") ? "active" : "")">
+                                    <p>Fuel Companies</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-controller="Airports" asp-action="Index"
+                                   class="nav-link @(IsActive("Airports", "Index", "Create", "Edit") ? "active" : "")">
+                                    <p>Airports</p>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                 }
 
