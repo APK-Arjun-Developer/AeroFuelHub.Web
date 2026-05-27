@@ -1,0 +1,52 @@
+@model AeroFuelHub.Web.ViewModels.MasterData.FuelCompanyFormViewModel
+
+@{
+    ViewData["Title"] = "Create Fuel Company";
+    ViewData["Subtitle"] = "Add a new fuel company";
+}
+
+<div class="mb-3">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+        <i class="fas fa-arrow-left me-1" aria-hidden="true"></i>Back to fuel companies
+    </a>
+</div>
+
+<div class="card card-app">
+    <div class="card-header">
+        <h3 class="card-title mb-0">
+            <i class="fas fa-plus-circle me-2 text-primary" aria-hidden="true"></i>New fuel company
+        </h3>
+    </div>
+
+    <form asp-action="Create" method="post" id="fuelCompanyForm">
+        <div class="card-body">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="Name" class="form-label"></label>
+                    <input asp-for="Name" class="form-control" placeholder="Fuel company name" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer bg-transparent border-top d-flex flex-wrap gap-2 justify-content-between align-items-center">
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary" id="submitBtn">
+                <i class="fas fa-check me-1" aria-hidden="true"></i>Save
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script>
+        $('#fuelCompanyForm').on('submit', function () {
+            if (!$(this).valid()) return;
+            $('#submitBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i>Saving...');
+        });
+    </script>
+}
+
