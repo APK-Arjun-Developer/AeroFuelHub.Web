@@ -24,7 +24,6 @@ public class FuelTransactionRepository : IFuelTransactionRepository
             .Include(x => x.Aircraft)
             .Include(x => x.Airport)
             .Include(x => x.FuelCompany)
-            .Where(x => !x.IsDeleted)
             .AsQueryable();
     }
 
@@ -78,7 +77,7 @@ public class FuelTransactionRepository : IFuelTransactionRepository
     public Task AddTransactionAsync(FuelTransaction transaction) => _context.FuelTransactions.AddAsync(transaction).AsTask();
 
     public Task<FuelTransaction?> GetTrackedTransactionByIdAsync(int id) =>
-        _context.FuelTransactions.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
+        _context.FuelTransactions.FirstOrDefaultAsync(x => x.Id == id);
 
     public Task SaveChangesAsync() => _context.SaveChangesAsync();
 }

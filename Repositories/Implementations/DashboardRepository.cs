@@ -15,14 +15,14 @@ public class DashboardRepository : IDashboardRepository
     }
 
     public async Task<List<(int Month, int Count)>> GetMonthlyTransactionCountsAsync() =>
-        (await _context.FuelTransactions.AsNoTracking().Where(x => !x.IsDeleted)
+        (await _context.FuelTransactions.AsNoTracking()
         .GroupBy(x => new { x.TransactionDate.Month })
         .Select(x => new { x.Key.Month, Count = x.Count() })
         .OrderBy(x => x.Month).ToListAsync())
         .Select(x => (x.Month, x.Count)).ToList();
 
     public Task<int> GetTotalTransactionsAsync() =>
-        _context.FuelTransactions.AsNoTracking().CountAsync(x => !x.IsDeleted);
+        _context.FuelTransactions.AsNoTracking().CountAsync();
 
     public Task<int> GetTotalAirlinesAsync() =>
         _context.Airlines.AsNoTracking().CountAsync();
@@ -34,16 +34,15 @@ public class DashboardRepository : IDashboardRepository
         _context.Airports.AsNoTracking().CountAsync();
 
     public async Task<decimal> GetTotalRevenueAsync() =>
-        await _context.FuelTransactions.AsNoTracking().Where(x => !x.IsDeleted).SumAsync(x => (decimal?)x.TotalAmount) ?? 0;
+        await _context.FuelTransactions.AsNoTracking().SumAsync(x => (decimal?)x.TotalAmount) ?? 0;
 
     public async Task<decimal> GetTotalFuelQuantityAsync() =>
-        await _context.FuelTransactions.AsNoTracking().Where(x => !x.IsDeleted).SumAsync(x => (decimal?)x.FuelQuantity) ?? 0;
+        await _context.FuelTransactions.AsNoTracking().SumAsync(x => (decimal?)x.FuelQuantity) ?? 0;
 
     public IQueryable<FuelTransaction> QueryRoleTransactions() => _context.FuelTransactions
         .AsNoTracking()
         .Include(x => x.Airline)
         .Include(x => x.FuelCompany)
         .Include(x => x.Airport)
-        .Where(x => !x.IsDeleted)
         .AsQueryable();
 }
