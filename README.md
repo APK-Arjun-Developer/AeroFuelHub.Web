@@ -1,7 +1,5 @@
 # AeroFuel Hub
 
-[![Build and Deploy AeroFuelHub](https://github.com/<ORG_OR_USER>/AeroFuelHub.Web/actions/workflows/deploy.yml/badge.svg)](https://github.com/<ORG_OR_USER>/AeroFuelHub.Web/actions/workflows/deploy.yml)
-
 AeroFuel Hub is an enterprise-style ASP.NET Core MVC web application for managing aviation fuel operations, including master data, transaction lifecycle tracking, role-based dashboards, and reporting exports.
 
 ## Features
