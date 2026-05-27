@@ -1,99 +1,289 @@
 # AeroFuel Hub
 
-Aircraft fuel transaction management system built with ASP.NET Core MVC for interview assessment.
+[![Build and Deploy AeroFuelHub](https://github.com/<ORG_OR_USER>/AeroFuelHub.Web/actions/workflows/deploy.yml/badge.svg)](https://github.com/<ORG_OR_USER>/AeroFuelHub.Web/actions/workflows/deploy.yml)
 
-## Tech Stack
-
-- ASP.NET Core MVC (.NET 10)
-- Entity Framework Core + SQL Server
-- ASP.NET Identity (role-based authentication)
-- AdminLTE 3 + Bootstrap 5
-- Chart.js, QuestPDF, ClosedXML
-- Toast notifications (Notyf)
+AeroFuel Hub is an enterprise-style ASP.NET Core MVC web application for managing aviation fuel operations, including master data, transaction lifecycle tracking, role-based dashboards, and reporting exports.
 
 ## Features
 
-- Authentication and role-based authorization
-- Roles: Admin, AirlineExecutive, FuelSupplyExecutive, FuelCoordinator
-- Role-based sidebar navigation and data filtering
-- Fuel transaction CRUD with soft delete
-- Role-scoped dashboards with Chart.js analytics
-- User and profile management
-- PDF invoice generation and Excel export
-- Dark mode and toast notifications
+- Role-based access control with scoped dashboards for:
+  - **Admin**
+  - **AirlineExecutive**
+  - **FuelSupplyExecutive**
+  - **FuelCoordinator**
+- Authentication and authorization using ASP.NET Core Identity.
+- Fuel transaction workflow:
+  - Create, view, search, and soft-delete transactions
+  - Transaction history and details
+  - PDF invoice generation
+  - Excel report export
+- Master data management:
+  - Airlines
+  - Aircraft
+  - Airports
+  - Fuel companies
+- User administration and profile management.
+- Seeded initial roles, users, and sample master data for quick onboarding.
+- Toast notifications and responsive UI.
+
+## Tech Stack
+
+| Category | Technology |
+|---|---|
+| Backend | ASP.NET Core MVC (.NET 10, `net10.0`) |
+| ORM / Data Access | Entity Framework Core 10 (SQL Server provider) |
+| Database | SQL Server / SQL Server Express (configurable via connection string) |
+| AuthN/AuthZ | ASP.NET Core Identity + role-based authorization |
+| Reporting | QuestPDF (PDF), ClosedXML (Excel) |
+| UI | Razor Views, Bootstrap 5, jQuery, jQuery Validation, AdminLTE layout styling |
+| Notifications | AspNetCoreHero.ToastNotification (Notyf) |
+| CI/CD | GitHub Actions + FTP deployment (MonsterASP target) |
 
 ## Architecture
 
+The project follows a layered MVC + service/repository pattern:
+
+```text
+Controller -> Service -> Repository -> DbContext (EF Core)
 ```
-Controller → Service → Repository → DbContext
+
+Key patterns used:
+
+- **Separation of concerns** between web, business, and data layers.
+- **Dependency injection** for repository/service abstractions.
+- **Soft delete strategy** for fuel transactions using query filters.
+- **Role-driven data access behavior** in dashboard/user flows.
+
+## Project Structure
+
+```text
+AeroFuelHub.Web/
+├─ .github/
+│  └─ workflows/
+│     └─ deploy.yml
+├─ Constants/
+│  └─ Roles.cs
+├─ Controllers/
+│  ├─ AccountController.cs
+│  ├─ DashboardController.cs
+│  ├─ FuelTransactionController.cs
+│  ├─ UserController.cs
+│  ├─ ProfileController.cs
+│  ├─ AirlinesController.cs
+│  ├─ AircraftsController.cs
+│  ├─ AirportsController.cs
+│  └─ FuelCompaniesController.cs
+├─ Data/
+│  ├─ ApplicationDbContext.cs
+│  └─ Seeders/
+│     ├─ DbSeeder.cs
+│     └─ MasterDataSeeder.cs
+├─ Enums/
+├─ Migrations/
+├─ Models/
+│  ├─ Common/
+│  └─ Entities/
+├─ Repositories/
+│  ├─ Interfaces/
+│  └─ Implementations/
+├─ Services/
+│  ├─ Interfaces/
+│  └─ Implementations/
+├─ ViewModels/
+├─ Views/
+├─ wwwroot/
+├─ appsettings.json
+├─ appsettings.Development.json
+├─ appsettings.Production.example.json
+├─ Program.cs
+├─ AeroFuelHub.Web.csproj
+└─ AeroFuelHub.Web.sln
 ```
 
 ## Prerequisites
 
-- [.NET 10 SDK](https://dotnet.microsoft.com/download)
-- SQL Server (LocalDB or SQL Server Express)
+- **.NET SDK**: .NET 10 SDK (required by `TargetFramework: net10.0`).
+- **Database**: SQL Server instance (e.g., SQL Server Express / Local SQL Server).
+- **IDE**: Visual Studio 2022+ (or VS Code + C# extension).
+- **EF Core CLI (recommended)**:
+  ```bash
+  dotnet tool install --global dotnet-ef
+  ```
+- **Node/npm**: Not required for default build/run workflow in this repository.
 
-## Setup
+## Installation
 
-1. Clone the repository and open the solution folder.
-2. **Development** — connection string is in `appsettings.Development.json` (local SQL Express). Update it if your SQL instance differs.
-3. Apply migrations and run the app:
+1. **Clone the repository**
+   ```bash
+   git clone <REPOSITORY_URL>
+   cd AeroFuelHub.Web
+   ```
+
+2. **Restore dependencies**
+   ```bash
+   dotnet restore AeroFuelHub.Web.sln
+   ```
+
+3. **Configure settings**
+   - Development connection string is in `appsettings.Development.json`.
+   - For production-like setup, copy `appsettings.Production.example.json` into a local `appsettings.Production.json` and fill secrets locally.
+
+4. **Apply database migrations**
+   ```bash
+   dotnet ef database update
+   ```
+
+5. **Run the application**
+   ```bash
+   dotnet run --project AeroFuelHub.Web.csproj
+   ```
+
+6. **Open in browser**
+   - HTTPS profile default: `https://localhost:7161`
+   - HTTP profile default: `http://localhost:5029`
+
+## Environment Variables / Configuration
+
+### Core configuration
+
+| Key | Required | Description |
+|---|---|---|
+| `ConnectionStrings:DefaultConnection` | Yes | SQL Server connection string used by EF Core. |
+| `ASPNETCORE_ENVIRONMENT` | Yes | `Development` / `Production`; controls config source and middleware behavior. |
+| `Logging:LogLevel:*` | Optional | Application and framework log verbosity. |
+
+### GitHub Actions secrets (for deployment workflow)
+
+| Secret | Required | Description |
+|---|---|---|
+| `FTP_SERVER` | Yes | FTP host for deployment target. |
+| `FTP_USERNAME` | Yes | FTP username. |
+| `FTP_PASSWORD` | Yes | FTP password. |
+| `PRODUCTION_CONNECTION_STRING` | Yes | Production SQL Server connection string used to generate `appsettings.Production.json` during CI. |
+
+> Do not commit real production secrets to source control.
+
+## Database Setup
+
+- Provider: **Microsoft.EntityFrameworkCore.SqlServer**.
+- DbContext: `ApplicationDbContext` (inherits from `IdentityDbContext<ApplicationUser>`).
+- Automatic migration on startup: `Database.MigrateAsync()` is executed at app boot.
+- Existing migrations are under `Migrations/`.
+- Seed data process at startup:
+  - Role seeding
+  - Admin user seeding
+  - Demo role users seeding
+  - Master data seeding (airlines, airports, fuel companies, aircraft)
+
+### Default seeded accounts
+
+| Role | Email | Password |
+|---|---|---|
+| Admin | `admin@aerofuelhub.com` | `Admin@123` |
+| AirlineExecutive | `airline@aerofuelhub.com` | `Password@123` |
+| FuelSupplyExecutive | `fuel@aerofuelhub.com` | `Password@123` |
+| FuelCoordinator | `coordinator@aerofuelhub.com` | `Password@123` |
+
+> TODO: Rotate seeded credentials and enforce secure secrets policy before production use.
+
+## Build and Run
 
 ```bash
-dotnet ef database update
-dotnet run
+dotnet restore AeroFuelHub.Web.sln
+dotnet build AeroFuelHub.Web.csproj --configuration Debug
+dotnet run --project AeroFuelHub.Web.csproj
 ```
 
-On first run, the app seeds roles, demo users, and master data (airlines, airports, fuel companies, aircraft).
+## GitHub Actions / CI-CD
 
-1. Open the app in a browser (typically `https://localhost:7xxx` — see launch output).
+This repository includes one workflow:
 
-## Production (MonsterASP.NET)
+- **`.github/workflows/deploy.yml`**
+  - Triggers on push to `main`
+  - Restores, builds, publishes the app
+  - Generates `appsettings.Production.json` from `PRODUCTION_CONNECTION_STRING`
+  - Deploys publish output to `/wwwroot/` via `SamKirkland/FTP-Deploy-Action`
 
-**Do not commit** `appsettings.Production.json` (passwords). It is gitignored. Use `appsettings.Production.example.json` as a template for local testing only.
+### Deployment target
 
-### Auto-deploy (GitHub Actions on `main`)
+- Designed for MonsterASP-style FTP deployment.
+- Production environment should set `ASPNETCORE_ENVIRONMENT=Production`.
 
-Add these **repository secrets** (Settings → Secrets and variables → Actions):
+## Screenshots
 
-| Secret | Value |
-|--------|--------|
-| `FTP_SERVER` | MonsterASP host, e.g. `site12345.siteasp.net` (no `ftp://`) |
-| `FTP_USERNAME` | FTP username from Deploy page |
-| `FTP_PASSWORD` | FTP password |
-| `PRODUCTION_CONNECTION_STRING` | Full SQL connection string from MonsterASP MSSQL page |
+> TODO: Add screenshots for the following pages:
 
-On each push to `main`, the workflow builds in **Release**, creates `appsettings.Production.json` from the secret, and uploads to `/wwwroot/` via FTP.
+- Login page
+- Role-specific dashboard (Admin / Airline / Fuel Supply / Coordinator)
+- Fuel transaction create form
+- Fuel transaction history/report page
 
-In MonsterASP, set **`ASPNETCORE_ENVIRONMENT`** = `Production` (recommended).
+## API Endpoints
 
-Migrations run automatically on startup (`Database.MigrateAsync()`).
+This is an MVC web app (primarily Razor Views), not a standalone REST API. Key HTTP endpoints are controller actions:
 
-### Manual publish (Visual Studio)
+| Method | Route | Description |
+|---|---|---|
+| GET | `/Account/Login` | Render login page. |
+| POST | `/Account/Login` | Authenticate user session. |
+| POST | `/Account/Logout` | End authenticated session. |
+| GET | `/Dashboard/Admin` | Admin dashboard. |
+| GET | `/FuelTransaction/Create` | Render create transaction form. |
+| POST | `/FuelTransaction/Create` | Submit new fuel transaction. |
+| GET | `/FuelTransaction/History` | List/search transactions. |
+| GET | `/FuelTransaction/Details/{id}` | View transaction details. |
+| GET | `/FuelTransaction/Invoice/{id}` | Generate/download invoice PDF. |
+| GET | `/FuelTransaction/ExportExcel` | Export filtered report to Excel. |
+| POST | `/FuelTransaction/Delete/{id}` | Soft delete transaction. |
 
-Copy `appsettings.Production.example.json` to `appsettings.Production.json`, fill in your connection string, then Publish. That file stays on your machine only.
+## Testing
 
-## Demo Credentials
+- No dedicated test project is currently present in the repository.
+- Current validation approach is build + runtime verification.
 
+> TODO: Add unit/integration test projects (e.g., xUnit + WebApplicationFactory) and include in CI pipeline.
 
-| Role                  | Email                                                             | Password     |
-| --------------------- | ----------------------------------------------------------------- | ------------ |
-| Admin                 | [admin@aerofuelhub.com](mailto:admin@aerofuelhub.com)             | Admin@123    |
-| Airline Executive     | [airline@aerofuelhub.com](mailto:airline@aerofuelhub.com)         | Password@123 |
-| Fuel Supply Executive | [fuel@aerofuelhub.com](mailto:fuel@aerofuelhub.com)               | Password@123 |
-| Fuel Coordinator      | [coordinator@aerofuelhub.com](mailto:coordinator@aerofuelhub.com) | Password@123 |
+## Deployment
 
+### GitHub Actions (recommended)
 
-## Project Structure
+- Push to `main` triggers automated build and FTP deploy workflow.
+- Configure required repository secrets before first deployment.
 
-```
-Controllers/          MVC controllers (thin)
-Services/             Business logic and authorization scoping
-Repositories/         Data access (EF Core)
-Models/Entities/      Domain entities
-ViewModels/           Form and display models
-Views/                Razor views
-Data/                 DbContext and seeders
-Constants/            Role name constants
-```
+### Visual Studio publish (manual)
 
+- Use included publish profile templates under `Properties/PublishProfiles/` as a starting point.
+- Ensure production connection string is supplied in environment-specific settings.
+
+> TODO: Add Azure App Service and/or Docker deployment profiles if required by your platform strategy.
+
+## Contributing
+
+1. Create a feature branch from `main`.
+2. Follow existing layered architecture conventions (Controller -> Service -> Repository).
+3. Keep controllers thin and move business logic into services.
+4. Add/update migrations for schema changes.
+5. Submit a pull request with:
+   - Change summary
+   - Validation steps
+   - Screenshots (for UI changes)
+
+## License
+
+No license file is currently present.
+
+> TODO: Add a `LICENSE` file (for example MIT, Apache-2.0, or company-internal proprietary license) and update this section.
+
+## Author / Maintainers
+
+- **Primary repository maintainer(s):** TODO
+- **Contact / team alias:** TODO
+
+---
+
+If you maintain this project in production, consider adding:
+
+- Branch protection rules
+- Required PR checks
+- Security scanning (CodeQL/Dependabot)
+- Secrets scanning and credential rotation policy
