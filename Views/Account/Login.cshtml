@@ -1,4 +1,6 @@
 @model AeroFuelHub.Web.ViewModels.Account.LoginViewModel
+@using Microsoft.Extensions.Options
+@inject IOptions<AeroFuelHub.Web.Models.Common.DemoCredentialsOptions> DemoCredentials
 
 @{
     ViewData["Title"] = "Login";
@@ -89,6 +91,30 @@
                     </button>
                 </form>
 
+                @if (DemoCredentials.Value.Enabled && DemoCredentials.Value.Accounts.Count > 0)
+                {
+                    <details class="demo-credentials">
+                        <summary>
+                            <i class="fas fa-key me-1" aria-hidden="true"></i>Demo credentials
+                            <i class="fas fa-chevron-down demo-credentials-chevron" aria-hidden="true"></i>
+                        </summary>
+                        <p class="demo-credentials-hint">Click a role to fill in the login form.</p>
+                        <div class="demo-credentials-list">
+                            @foreach (var demo in DemoCredentials.Value.Accounts)
+                            {
+                                <button type="button" class="demo-credential" data-email="@demo.Email" data-password="@demo.Password">
+                                    <i class="fas @demo.Icon" aria-hidden="true"></i>
+                                    <span class="demo-credential-text">
+                                        <strong>@demo.Role</strong>
+                                        <span>@demo.Email</span>
+                                        <span>@demo.Password</span>
+                                    </span>
+                                </button>
+                            }
+                        </div>
+                    </details>
+                }
+
                 <p class="auth-footer-note">&copy; @DateTime.UtcNow.Year AeroFuel Hub</p>
             </div>
         </main>
@@ -105,6 +131,13 @@
             input.attr('type', isPassword ? 'text' : 'password');
             $(this).find('i').toggleClass('fa-eye fa-eye-slash');
             $(this).attr('aria-label', isPassword ? 'Hide password' : 'Show password');
+        });
+
+        $('.demo-credential').on('click', function () {
+            $('#Email').val($(this).data('email'));
+            $('#Password').val($(this).data('password'));
+            $('.demo-credential').removeClass('active');
+            $(this).addClass('active');
         });
     </script>
 
