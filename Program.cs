@@ -1,5 +1,6 @@
 using AeroFuelHub.Web.Data;
 using AeroFuelHub.Web.Data.Seeders;
+using AeroFuelHub.Web.Models.Common;
 using AeroFuelHub.Web.Models.Entities;
 using AeroFuelHub.Web.Repositories.Implementations;
 using AeroFuelHub.Web.Repositories.Interfaces;
@@ -19,6 +20,9 @@ if (string.IsNullOrWhiteSpace(connectionString))
 }
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.Configure<DemoCredentialsOptions>(
+    builder.Configuration.GetSection(DemoCredentialsOptions.SectionName));
 
 builder.Services.AddNotyf(config =>
 {

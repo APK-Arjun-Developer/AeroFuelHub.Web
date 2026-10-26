@@ -33,13 +33,19 @@ jobs:
       - name: Create appsettings.Production.json from GitHub Secret
         env:
           CONNECTION_STRING: ${{ secrets.PRODUCTION_CONNECTION_STRING }}
+          SHOW_DEMO_CREDENTIALS: ${{ vars.SHOW_DEMO_CREDENTIALS || 'false' }}
         run: |
           if [ -z "$CONNECTION_STRING" ]; then
             echo "::error::GitHub secret PRODUCTION_CONNECTION_STRING is not set."
             exit 1
           fi
+          if [ "$SHOW_DEMO_CREDENTIALS" != "true" ] && [ "$SHOW_DEMO_CREDENTIALS" != "false" ]; then
+            echo "::error::GitHub variable SHOW_DEMO_CREDENTIALS must be 'true' or 'false'."
+            exit 1
+          fi
           jq -n \
             --arg cs "$CONNECTION_STRING" \
+            --argjson demo "$SHOW_DEMO_CREDENTIALS" \
             '{
               "Logging": {
                 "LogLevel": {
@@ -50,6 +56,9 @@ jobs:
               },
               "ConnectionStrings": {
                 "DefaultConnection": $cs
+              },
+              "DemoCredentials": {
+                "Enabled": $demo
               }
             }' > ./publish/appsettings.Production.json
 
