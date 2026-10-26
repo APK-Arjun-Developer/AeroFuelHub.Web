@@ -62,6 +62,29 @@ jobs:
               }
             }' > ./publish/appsettings.Production.json
 
+      # IIS keeps the running app's DLLs locked (FTP 550). Uploading app_offline.htm
+      # makes IIS stop the app and release the files before we replace them.
+      - name: Take Site Offline
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          cat > app_offline.htm <<'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head><meta charset="utf-8" /><title>AeroFuel Hub - Updating</title></head>
+          <body style="font-family:system-ui,sans-serif;text-align:center;padding-top:15vh;">
+            <h1>AeroFuel Hub is being updated</h1>
+            <p>Please check back in a minute.</p>
+          </body>
+          </html>
+          EOF
+          curl --fail --silent --show-error --user "$FTP_USERNAME:$FTP_PASSWORD" \
+            -T app_offline.htm "ftp://$FTP_SERVER/wwwroot/app_offline.htm"
+          # Give IIS time to shut down the app and release file locks
+          sleep 10
+
       - name: Deploy to MonsterASP via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
@@ -71,3 +94,15 @@ jobs:
           local-dir: ./publish/
           server-dir: /wwwroot/
           dangerous-clean-slate: false
+          exclude: |
+            **/app_offline.htm
+
+      - name: Bring Site Back Online
+        if: always()
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          curl --fail --silent --show-error --user "$FTP_USERNAME:$FTP_PASSWORD" \
+            "ftp://$FTP_SERVER/" -Q "DELE /wwwroot/app_offline.htm" -o /dev/null
